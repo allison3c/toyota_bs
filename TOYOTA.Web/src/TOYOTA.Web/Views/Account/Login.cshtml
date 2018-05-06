@@ -1,0 +1,190 @@
+﻿@{
+    Layout = null;
+}
+
+@section HeadCss{
+    <link href="~/css/design/common.css" rel="stylesheet" />
+    <link href="~/css/design/style.css" rel="stylesheet" />
+
+}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <title>大众进口汽车区域管理工具包</title>
+    <link href="~/css/design/common.css" rel="stylesheet" />
+    <link href="~/css/design/style.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/site.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#inputUserID").val(GetCookie("TOYOTA_USERNAME"));
+            $("#inputUserID").focus();
+            $("#btnLogin").click(function () {
+                Setcookie("TOYOTA_USERNAME", $("#inputUserID").val());
+            });
+            $("#inputUserID").focus(function () {
+                $("#spanMsg").html("&nbsp;");
+            });
+            $("#inputPassword").focus(function () {
+                $("#spanMsg").html("&nbsp;");
+            });
+            fn_rightNav();
+        });
+        function fn_rightNav() {
+            var btb = $(".rightNav");
+            var tempS;
+            $(".rightNav").hover(function () {
+                var thisObj = $(this);
+                tempS = setTimeout(function () {
+                    thisObj.find("a").each(function (i) {
+                        var tA = $(this);
+                        setTimeout(function () {
+                            tA.animate({ right: "0" }, 300);
+                        }, 50 * i);
+                    });
+                }, 200);
+            }, function () {
+                if (tempS) {
+                    clearTimeout(tempS);
+                }
+                $(this).find("a").each(function (i) {
+                    var tA = $(this);
+                    setTimeout(function () {
+                        tA.animate({ right: "-110" }, 300, function () {
+                        });
+                    }, 50 * i);
+                });
+            });
+        }
+    </script>
+    <style type="text/css">
+        body {
+            height: 100%;
+        }
+
+        .hotLine {
+            width: 1000px;
+            text-align: center;
+            bottom: 0px;
+            margin-bottom: 10px;
+            position: fixed;
+            /*color: #D0D0D0;*/
+            color: white;
+            right: 0;
+            left: 0;
+            font-size: 10pt;
+            font-family: inherit;
+        }
+
+            /*.hotLine p {
+                background-color: #2595D3;
+                filter: alpha(Opacity=80);
+                -moz-opacity: 0.8;
+                opacity: 0.8;
+            }*/
+
+        /* rightNav */
+        .rightNav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9999;
+            width: 140px;
+            cursor: pointer;
+            margin: 100px 0 0 0;
+        }
+
+        *html .rightNav {
+            position: absolute;
+            top: expression(eval(document.documentElement.scrollTop));
+        }
+
+            .rightNav a {
+                display: block;
+                position: relative;
+                height: 35px;
+                line-height: 35px;
+                margin-bottom: 2px;
+                /*background: RGB(252,252,252);*/
+                padding-right: 10px;
+                width: 145px;
+                overflow: hidden;
+                cursor: pointer;
+                right: -110px;
+            }
+
+                .rightNav a:hover {
+                    text-decoration: none;
+                    color: #1974A1;
+                }
+
+                    .rightNav a:hover em {
+                        /*background: RGB(252,252,252);*/
+                    }
+
+                .rightNav a em {
+                    display: block;
+                    float: left;
+                    width: 30px;
+                    background: RGB(225,225,225);
+                    color: #fff;
+                    font-size: 16px;
+                    text-align: center;
+                    margin-right: 10px;
+                    font-style: normal;
+                }
+    </style>
+</head>
+<body>
+    <div class="login_out" style="margin:0px">
+        <div class="login_inner">
+            <div class="login_bg">
+                <div class="login_con auto fix">
+                    <div class="fl login_logo">
+                        <img src="~/css/images/login_03.png" alt="" class="ml66">
+                        <img src="~/css/images/login_13.png" alt="" class="ml33">
+                    </div>
+                    <div class="fl login_shuru">
+                        <div class="login_shurubt mb10"><span class="kuai mr10"></span>用户登录</div>
+                        <div class="col-md-12" style="margin-bottom:10px">
+                            <span id="spanMsg" style="color: Red; float: right; clear: both;">&nbsp;@ViewBag.ErrorLoginMessage</span>
+                        </div>
+                        @using (Html.BeginForm("login", "Account", new { }, FormMethod.Post, true, new { @class = "form-horizontal", @role = "form" }))
+                        {
+                            @Html.TextBox("inputUserID", "", new { @class = "login_name input_test", placeholder = "Login", autocomplete = "off" })<br />
+                            @Html.Password("inputPassword", "", new { @class = "login_mima input_test", placeholder = "Password", autocomplete = "new-password" })<br />
+                            <button id="btnLogin" type="submit" class="login_yes mr40">登   录</button>
+                            <button id="btnReset" type="reset" class="login_yes">重   置</button>
+                        }
+                    </div>
+                </div>
+                <div style="position: fixed;left:50px;top:30%">
+                    <p style="padding-bottom:5px;">Android手机端扫码安装</p>
+                    <img src="~/images/Login/android_qrcode.png" width="130" height="130" />
+                    <p style="margin-left:-9px">（Android4.4版本及以上）</p>
+                </div>
+                <div style="position:fixed;float:right;top:30%;right:50px;text-align:right">
+                    <p style="padding-bottom:5px;">苹果IOS手机端扫码安装</p>
+                    <img src="~/images/Login/ios_qrcode.png" width="130" height="130" />
+                    <p style="padding-right:5px">（IOS 8 版本及以上）</p>
+                </div>
+                <div class="auto hotLine">
+                    <p>系统支持热线：010-84505518（9:00 - 18:00 节假日除外）</p>
+                    <p>IOS版本安装完毕后，请在弹出框中点击信任。如果未弹出的话，请到“设置-->通用-->设备管理”,找到“MaxInsight Data & Consulting Co., Ltd.”，然后点击信任。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="rightNav" style="margin-top: 260px;">
+
+            <a href="http://www.pgyer.com/maxinsight_droid" target="_blank" style="right: -110px;">
+                <em><img src="~/images/Login/android.png" width="24" height="31" /></em>Android版
+            </a>
+            <a href="http://www.pgyer.com/maxinsight_ios" target="_blank" style="right: -110px;">
+                <em><img src="~/images/Login/ios.png" width="24" height="31" /></em>IOS版
+            </a>
+        </div>*@
+</body>
+</html> 
