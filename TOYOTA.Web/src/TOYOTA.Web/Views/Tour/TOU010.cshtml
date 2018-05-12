@@ -438,6 +438,8 @@
                             formatter: function (cellvalue, options, rowObject) {
                                 if (cellvalue == "E") {
                                     return "检查完成";
+                                } if (cellvalue == "EN") {
+                                    return "检查完成未改善";
                                 } else {
                                     return "未结束";
                                 }
