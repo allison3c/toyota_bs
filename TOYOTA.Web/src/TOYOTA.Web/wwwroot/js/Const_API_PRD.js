@@ -122,7 +122,7 @@ var GETPLANSLISTFOREXCELDOWNLOAD = BASE_URL + "Report/GetPlansListForExcelDownlo
 //OSS
 accessid = 'LTAIfqFA9xw39K2m';
 accesskey = 'ncsMx1Nvm5hbol9x2mnWlO0vWFEfDC';
-host = 'http://toyota.oss-cn-shanghai.aliyuncs.com/';
+host = 'http://toyota-ftms.oss-cn-shanghai.aliyuncs.com/';
 
 g_dirname = ''
 //END
