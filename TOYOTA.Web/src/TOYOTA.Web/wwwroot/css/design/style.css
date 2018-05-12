@@ -343,6 +343,7 @@ li span.w_ovh{width: 110px;white-space: nowrap;overflow: hidden;-o-text-overflow
 .login_bg{background:url(../images/loginbg.jpg) center -180px repeat;width: 1920px;min-height:1100px;height: 100%;} 
 .login_logo{width: 239px;border-right: 1px solid #b5b5b5;}
 .ml66{margin-left: 66px;margin-bottom: 28px;}
+.ml88{margin-left: 88px;margin-bottom: 28px;}
 .login_shuru{margin-left: 47px;}
 .login_shurubt{font-size: 24px;margin-top: 7px;}
 input.login_name,input.login_mima{border-bottom-color:#dcd8d8;  width: 263px;border-left: none;border-right: none;border-top: none;padding: 10px 33px;margin: 7px 0;font-size: 14px; border-bottom-style:solid;}
@@ -362,3 +363,6 @@ button.login_yes,input.login_yes:hover{background:url(../images/login_17.png) 0 
 .index_tabcon span.tabshow{display:block;}
 .index_tz{padding-left: 15px;}
 .index_tabcon img{width: 338px;}
+.logo_font_p1{font-weight:bold;color:#434343;}
+.logo_font_p2{font-size:15px;font-weight:bold;color:#434343;margin-bottom:5px;}
+.logo_font_p3{font-size:8px;color:#B6B6B6}
