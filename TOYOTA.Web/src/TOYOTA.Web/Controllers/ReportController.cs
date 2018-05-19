@@ -57,35 +57,10 @@ namespace TOYOTA.Web.Controllers
                 if (apiResult.ResultCode == ResultType.Success)
                 {
                     ExcelResult er = CommonHelper.DecodeString<ExcelResult>(apiResult.Body);
-                    List<ResultExcelDto> list = er.ResultList;
-                    string discode = list.FirstOrDefault<ResultExcelDto>().DisCode;
-                    List<LosePic> lpList = er.LPicList;
-                    if (lpList.Count % 2 == 1)
-                    {
-                        lpList.Add(new LosePic());
-                    }
-                    //未通过体系
-                    List<ResultExcelDto> unlist2 = (from a in list where a.PassYN == "0" select a).ToList<ResultExcelDto>();
+                    List<ResultExcelDto> listAll = er.ResultList;
+                    string discode = listAll.FirstOrDefault<ResultExcelDto>().DisCode;
 
-                    List<ResultExcelDto> tiId = new List<ResultExcelDto>();
-                    foreach (var item in unlist2)
-                    {
-                        ResultExcelDto dto = new ResultExcelDto()
-                        {
-                            TIId = item.TIId,
-                            TITitle = item.TITitle,
-                            PlanApproalYN = item.PlanApproalYN,
-                            PlanFinishDate = item.PlanFinishDate,
-                            ResultApproalYN = item.ResultApproalYN,
-                            ResultFinishDate = item.ResultFinishDate,
-                            Remarks = item.Remarks
-                        };
-                        if (!(from a in tiId select a.TIId).Distinct().ToList<string>().Contains(item.TIId))
-                        {
-                            tiId.Add(dto);
-                        }
-                    }
-
+                    List<ResultExcelDto> list = (from a in listAll where a.Score == "0" select a).ToList<ResultExcelDto>();
 
                     var uploads = Path.Combine(_environment.WebRootPath, "Template");
                     var newFile = Path.Combine(uploads, "ScoreViewList_" + discode + "_" + disname + DateTime.Now.ToString("yyyyMMdd hhmmss") + ".xlsx");
@@ -131,7 +106,7 @@ namespace TOYOTA.Web.Controllers
 
                         var style2 = workbook.CreateCellStyle();
                         style2.Alignment = HorizontalAlignment.Left;
-                        style2.VerticalAlignment = VerticalAlignment.Top;
+                        style2.VerticalAlignment = VerticalAlignment.Bottom;
                         style2.WrapText = true;
                         style2.SetFont(font_b);
 
@@ -155,39 +130,52 @@ namespace TOYOTA.Web.Controllers
                         font_t.FontName = "Microsoft Yahei";
                         style_t.SetFont(font_t);
 
+                        //第一行，插入图片
+                        IRow row_0 = sheet1.CreateRow(0);
+                        row_0.Height = 600;
+                        CellRangeAddress region0 = new CellRangeAddress(0, 0, 0, 8);
+                        sheet1.AddMergedRegion(region0);
+                        byte[] bytes = System.IO.File.ReadAllBytes(_environment.WebRootPath + "/images/project_logo.png");
+                        int pictureIdx = workbook.AddPicture(bytes, PictureType.PNG);
+                        var patriarch = sheet1.CreateDrawingPatriarch();
+                        XSSFClientAnchor anchor = new XSSFClientAnchor(0, 0, 200, 40, 0, 0, 1, 1);
+                        anchor.AnchorType = AnchorType.MoveAndResize;
+                        //把图片插到相应的位置
+                        var pict = patriarch.CreatePicture(anchor, pictureIdx);
+
                         //标题
-                        IRow row_t = sheet1.CreateRow(0);
+                        IRow row_t = sheet1.CreateRow(1);
                         ICell cell_t = row_t.CreateCell(0);
-                        cell_t.SetCellValue("巡检报告");
-                        CellRangeAddress region_t = new CellRangeAddress(0, 0, 0, 6);
+                        cell_t.SetCellValue("一汽丰田PCM经销店经营能力评估-待改善项报告");
+                        CellRangeAddress region_t = new CellRangeAddress(1, 1, 0, 4);
                         cell_t.CellStyle = style_t;
                         sheet1.AddMergedRegion(region_t);
 
-                        IRow row = sheet1.CreateRow(1);
+                        //插入标题右边的Logo
+                        byte[] bytesRight = System.IO.File.ReadAllBytes(_environment.WebRootPath + "/images/pcm_logo.png");
+                        int pictureIdxRight = workbook.AddPicture(bytesRight, PictureType.PNG);
+                        var patriarchRight = sheet1.CreateDrawingPatriarch();
+                        XSSFClientAnchor anchorRight = new XSSFClientAnchor(0, 0, 0, 0, 6, 1, 7, 3);
+                        //把图片插到相应的位置
+                        var pictRight = patriarch.CreatePicture(anchorRight, pictureIdxRight);
+                        pictRight.Resize(2.01, 1.5);
+
+                        IRow row = sheet1.CreateRow(2);
+                        row.Height = 600;
                         ICell cell = row.CreateCell(0);
-                        cell.SetCellValue("经销商代码:" + discode + "                经销商名称：" + disname);
-                        CellRangeAddress region = new CellRangeAddress(1, 1, 0, 6);
+                        cell.SetCellValue("经销店代码:" + discode + "                经销店名称：" + disname + "                经销店负责人签字：________________");
+                        CellRangeAddress region = new CellRangeAddress(2, 2, 0, 4);
                         cell.CellStyle = style2;
                         sheet1.AddMergedRegion(region);
 
-
-
-                        IRow row1 = sheet1.CreateRow(2);
+                        IRow row1 = sheet1.CreateRow(3);
+                        row1.Height = 600;
                         ICell cel2 = row1.CreateCell(0);
                         //cel2.CellStyle = style;
-                        cel2.SetCellValue("期间：" + startTime + "~" + endTime + "    操作者：" + name);
+                        cel2.SetCellValue("期间：" + startTime + "                    评估员：" + name);
                         cel2.CellStyle = style2;
-                        CellRangeAddress region2 = new CellRangeAddress(2, 2, 0, 6);
+                        CellRangeAddress region2 = new CellRangeAddress(3, 3, 0, 4);
                         sheet1.AddMergedRegion(region2);
-
-                        IRow row0 = sheet1.CreateRow(3);
-                        ICell cel0 = row0.CreateCell(0);
-                        //cel2.CellStyle = style;
-                        cel0.SetCellValue("计划任务标题:" + (list.Count == 0 ? "" : list[0].PTitle));
-                        cel0.CellStyle = style2;
-                        CellRangeAddress region3 = new CellRangeAddress(3, 3, 0, 6);
-                        sheet1.AddMergedRegion(region3);
-
 
                         var style_sub = (XSSFCellStyle)workbook.CreateCellStyle();
                         style_sub.Alignment = HorizontalAlignment.Center;
@@ -195,166 +183,36 @@ namespace TOYOTA.Web.Controllers
                         style_sub.FillPattern = FillPattern.SolidForeground;
                         style_sub.SetFont(font_b);
 
+                        IRow row_nouse = sheet1.CreateRow(4);
+                        row_nouse.Height = 400;
+
                         IRow row_sub = sheet1.CreateRow(5);
                         ICell cell_sub = row_sub.CreateCell(0);
-                        cell_sub.SetCellValue("巡检结果及改善汇总");
-                        CellRangeAddress region_sub = new CellRangeAddress(5, 5, 0, 6);
+                        cell_sub.SetCellValue("待改善项汇总");
+                        CellRangeAddress region_sub = new CellRangeAddress(5, 5, 0, 8);
                         cell_sub.CellStyle = style_sub;
                         sheet1.AddMergedRegion(region_sub);
 
-                        IRow row_6 = sheet1.CreateRow(6);
-                        //ICell cell_6 = row_6.CreateCell(0);
-                        //cell_6.SetCellValue("未达标汇总:");
-                        //cell_6.CellStyle = style2;
-                        //CellRangeAddress region_6 = new CellRangeAddress(6, 6, 0, 0);
-                        //sheet1.AddMergedRegion(region_6);
-
-                        //改善项
-                        ICell cell_6_0 = row_6.CreateCell(0);
-                        cell_6_0.SetCellValue("改善项");
-                        cell_6_0.CellStyle = style1;
-                        CellRangeAddress region6_0 = new CellRangeAddress(6, 6, 0, 0);
-                        sheet1.AddMergedRegion(region6_0);
-                        //sheet1.SetColumnWidth(0, 7 * 600);
-
-                        //备注
-                        ICell cell_6_1 = row_6.CreateCell(1);
-                        cell_6_1.SetCellValue("备注");
-                        cell_6_1.CellStyle = style1;
-                        CellRangeAddress region6_1 = new CellRangeAddress(6, 6, 1, 1);
-                        sheet1.AddMergedRegion(region6_1);
-
-                        //计划审批
-                        ICell cell_6_2 = row_6.CreateCell(2);
-                        cell_6_2.SetCellValue("计划审批");
-                        cell_6_2.CellStyle = style1;
-                        CellRangeAddress region6_2 = new CellRangeAddress(6, 6, 2, 3);
-                        sheet1.AddMergedRegion(region6_2);
-
-                        //备注
-                        ICell cell_6_3 = row_6.CreateCell(3);
-                        cell_6_3.SetCellValue("");
-                        cell_6_3.CellStyle = style1;
-                        //CellRangeAddress region6_3 = new CellRangeAddress(6, 6, 3, 3);
-                        //sheet1.AddMergedRegion(region6_3);
-
-                        //结果审批
-                        ICell cell_6_4 = row_6.CreateCell(4);
-                        cell_6_4.SetCellValue("结果审批");
-                        cell_6_4.CellStyle = style1;
-                        CellRangeAddress region6_4 = new CellRangeAddress(6, 6, 4, 4);
-                        sheet1.AddMergedRegion(region6_4);
-
-                        //要求计划日期
-                        ICell cell_6_5 = row_6.CreateCell(5);
-                        cell_6_5.SetCellValue("要求计划日期");
-                        cell_6_5.CellStyle = style1;
-                        CellRangeAddress region6_5 = new CellRangeAddress(6, 6, 5, 5);
-                        sheet1.AddMergedRegion(region6_5);
-
-                        //要求结果日期
-                        ICell cell_6_6 = row_6.CreateCell(6);
-                        cell_6_6.SetCellValue("要求结果日期");
-                        cell_6_6.CellStyle = style1;
-                        CellRangeAddress region6_6 = new CellRangeAddress(6, 6, 6, 6);
-                        sheet1.AddMergedRegion(region6_6);
-
-
-                        if (tiId != null && tiId.Count > 0)
-                        {
-                            for (int i = 0; i < tiId.Count; i++)
-                            {
-                                IRow row_un = sheet1.CreateRow(7 + i);
-                                ICell cell_un = row_un.CreateCell(0);
-                                cell_un.SetCellValue("(" + (i + 1) + ")" + tiId[i].TITitle);
-                                cell_un.CellStyle = style2;
-
-                                ICell cell_un_1 = row_un.CreateCell(1);
-                                cell_un_1.SetCellValue(tiId[i].Remarks);
-                                cell_un_1.CellStyle = style2;
-
-                                ICell cell_un_2 = row_un.CreateCell(2);
-                                cell_un_2.SetCellValue(tiId[i].PlanApproalYN);
-                                cell_un_2.CellStyle = style4;
-                                CellRangeAddress region_un_1 = new CellRangeAddress(7 + i, 7 + i, 2, 3);
-                                sheet1.AddMergedRegion(region_un_1);
-
-                                ICell cell_un_3 = row_un.CreateCell(3);
-                                cell_un_3.SetCellValue("");
-                                cell_un_3.CellStyle = style2;
-
-                                ICell cell_un_4 = row_un.CreateCell(4);
-                                cell_un_4.SetCellValue(tiId[i].ResultApproalYN);
-                                cell_un_4.CellStyle = style4;
-
-                                ICell cell_un_5 = row_un.CreateCell(5);
-                                cell_un_5.SetCellValue(tiId[i].PlanFinishDate);
-                                cell_un_5.CellStyle = style4;
-
-                                ICell cell_un_6 = row_un.CreateCell(6);
-                                cell_un_6.SetCellValue(tiId[i].ResultFinishDate);
-                                cell_un_6.CellStyle = style4;
-                            }
-                        }
-
-
-
-
-                        int pw = 1;
-                        int tcw = 1;
-                        int tiw = 1;
-                        int csw = 1;
-                        int rw = 1;
-                        if (list != null && list.Count > 0)
-                        {
-                            for (int k = 0; k < list.Count; k++)
-                            {
-                                if ((list[k].PTitle == null ? 0 : list[k].PTitle.Length) > pw)
-                                {
-                                    pw = list[k].PTitle.Length;
-                                }
-                                if ((list[k].TCTitle == null ? 0 : list[k].TCTitle.Length) > tcw)
-                                {
-                                    tcw = list[k].TCTitle.Length;
-                                }
-                                if ((list[k].TITitle == null ? 0 : list[k].TITitle.Length) > tiw)
-                                {
-                                    tiw = list[k].TITitle.Length;
-                                }
-                                if ((list[k].CSTitle == null ? 0 : list[k].CSTitle.Length) > csw)
-                                {
-                                    csw = list[k].CSTitle.Length;
-                                }
-                                if ((list[k].Remarks == null ? 0 : list[k].Remarks.Length) > rw)
-                                {
-                                    rw = list[k].Remarks.Length;
-                                }
-                            }
-                        }
-                        int dataCount = 10;
-                        if (tiId != null && tiId.Count >= 0)
-                        {
-                            dataCount = tiId.Count + 10;
-                        }
+                        int dataCount = 6;
                         IRow row3 = sheet1.CreateRow(dataCount);
 
                         //任务卡名称
                         ICell cell6 = row3.CreateCell(0);
-                        cell6.SetCellValue("任务卡名称");
+                        cell6.SetCellValue("指标名称");
                         cell6.CellStyle = style1;
                         CellRangeAddress region6 = new CellRangeAddress(dataCount, dataCount, 0, 0);
                         sheet1.AddMergedRegion(region6);
-                        sheet1.SetColumnWidth(0, 7 * 600);
+                        sheet1.SetColumnWidth(0, 9 * 600);
                         //体系名称
                         ICell cell7 = row3.CreateCell(1);
-                        cell7.SetCellValue("体系名称");
+                        cell7.SetCellValue("标准与要求");
                         cell7.CellStyle = style1;
                         CellRangeAddress region7 = new CellRangeAddress(dataCount, dataCount, 1, 1);
                         sheet1.AddMergedRegion(region7);
-                        sheet1.SetColumnWidth(1, 7 * 600);
+                        sheet1.SetColumnWidth(1, 8 * 600);
                         //检查标准
                         ICell cell8 = row3.CreateCell(2);
-                        cell8.SetCellValue("检查标准");
+                        cell8.SetCellValue("过程与关键动作建议");
                         cell8.CellStyle = style1;
                         ICell cell9 = row3.CreateCell(3);
                         cell9.SetCellValue("");
@@ -364,9 +222,9 @@ namespace TOYOTA.Web.Controllers
                         cell_9.CellStyle = style1;
                         CellRangeAddress region8 = new CellRangeAddress(dataCount, dataCount, 2, 4);
                         sheet1.AddMergedRegion(region8);
-                        sheet1.SetColumnWidth(2, (9 * 300));
-                        sheet1.SetColumnWidth(3, (400));
-                        sheet1.SetColumnWidth(4, (13 * 300));
+                        sheet1.SetColumnWidth(2, (15 * 600));
+                        sheet1.SetColumnWidth(3, (3 * 600));
+                        sheet1.SetColumnWidth(4, (10 * 600));
                         //结果
                         //ICell cell9 = row3.CreateCell(3);
                         // cell9.SetCellValue("结果");
@@ -374,22 +232,29 @@ namespace TOYOTA.Web.Controllers
                         //CellRangeAddress region9 = new CellRangeAddress(dataCount, dataCount, 4, 4);
                         //sheet1.AddMergedRegion(region9);
 
-
                         //得分
                         ICell cell10 = row3.CreateCell(5);
-                        cell10.SetCellValue("得分");
+                        cell10.SetCellValue("是否合格");
                         cell10.CellStyle = style1;
-                        CellRangeAddress region10 = new CellRangeAddress(dataCount, dataCount, 5, 5);
+                        ICell cell101 = row3.CreateCell(6);
+                        cell101.SetCellValue("");
+                        cell101.CellStyle = style1;
+                        CellRangeAddress region10 = new CellRangeAddress(dataCount, dataCount, 5, 6);
                         sheet1.AddMergedRegion(region10);
-                        sheet1.SetColumnWidth(5, 5 * 600);
+                        sheet1.SetColumnWidth(5, 4 * 300);
+                        sheet1.SetColumnWidth(6, 4 * 300);
 
                         //备注
-                        ICell cell11 = row3.CreateCell(6);
+                        ICell cell11 = row3.CreateCell(7);
                         cell11.SetCellValue("备注");
                         cell11.CellStyle = style1;
-                        CellRangeAddress region11 = new CellRangeAddress(dataCount, dataCount, 6, 6);
+                        ICell cell111 = row3.CreateCell(8);
+                        cell111.SetCellValue("");
+                        cell111.CellStyle = style1;
+                        CellRangeAddress region11 = new CellRangeAddress(dataCount, dataCount, 7, 8);
                         sheet1.AddMergedRegion(region11);
-                        sheet1.SetColumnWidth(6, 7 * 600);
+                        sheet1.SetColumnWidth(7, 5 * 600);
+                        sheet1.SetColumnWidth(8, 3 * 600);
 
 
                         int firstRow1 = dataCount + 1;
@@ -484,9 +349,9 @@ namespace TOYOTA.Web.Controllers
                             //得分
                             c = "c_" + cnum;
                             c = (r as IRow).CreateCell(cnum);
-                            (c as ICell).SetCellValue(list[i].Score);
+                            (c as ICell).SetCellValue(list[i].Score == "0" ? "否" : "是");
                             (c as ICell).CellStyle = style4;
-                            //sheet1.AddMergedRegion(new CellRangeAddress(dataCount + i, dataCount + i, 7 + cnum, 7 + cnum));
+                            sheet1.AddMergedRegion(new CellRangeAddress(dataCount + 1 + i, dataCount + 1 + i, 5, 6));
                             cnum++;
 
                             //备注
@@ -499,69 +364,16 @@ namespace TOYOTA.Web.Controllers
                                 int cnt = (from l1 in list where l1.TCId == list[i].TCId && l1.TIId == list[i].TIId select l1).Count();
                                 sumCnt3 += cnt;
                                 lastRow3 = firstRow3 + cnt - 1;
-                                if (list[i].CSId != null)
-                                {
-                                    sheet1.AddMergedRegion(new CellRangeAddress(firstRow3, lastRow3, 6, 6));
-                                }
+                                //if (list[i].CSId != null)
+                                //{
+                                sheet1.AddMergedRegion(new CellRangeAddress(firstRow3, lastRow3, 7, 8));
+                                //}
                                 firstRow3 = lastRow3 + 1;
                             }
                             cnum++;
 
                         }
 
-                        IRow row_sub2 = sheet1.CreateRow(dataCount + 2 + list.Count);
-                        ICell cell_sub2 = row_sub2.CreateCell(0);
-                        cell_sub2.SetCellValue("巡检照片");
-                        CellRangeAddress region_sub2 = new CellRangeAddress(dataCount + 2 + list.Count, dataCount + 2 + list.Count, 0, 6);
-                        cell_sub2.CellStyle = style_sub;
-                        sheet1.AddMergedRegion(region_sub2);
-
-                        for (int i = 0; i < lpList.Count; i++)
-                        {
-                            XSSFClientAnchor anchor;
-                            IRow row_pic = sheet1.CreateRow(dataCount + 2 + list.Count + i + 1);
-                            if (i % 2 == 1)
-                            {
-                                row_pic.Height = 4000;
-                                anchor = new XSSFClientAnchor(50, 50, 50, 50, 4, dataCount + 2 + list.Count + i + 1, 7, dataCount + 2 + list.Count + i + 2);
-                            }
-                            else
-                            {
-                                ICell cell_pic = row_pic.CreateCell(0);
-                                cell_pic.CellStyle = style_b2;
-                                ICell cell_pic2 = row_pic.CreateCell(4);
-                                cell_pic2.CellStyle = style_b2;
-
-                                CellRangeAddress region_tp_1 = new CellRangeAddress(dataCount + 2 + list.Count + i + 1, dataCount + 2 + list.Count + i + 1, 0, 2);
-                                sheet1.AddMergedRegion(region_tp_1);
-                                CellRangeAddress region_tp_2 = new CellRangeAddress(dataCount + 2 + list.Count + i + 1, dataCount + 2 + list.Count + i + 1, 4, 6);
-                                sheet1.AddMergedRegion(region_tp_2);
-
-                                if (lpList[i].PicName != null)
-                                {
-                                    cell_pic.SetCellValue((i + 1) + "、第" + (i + 1) + "个拍照点的名称" + lpList[i].PicName);
-                                }
-                                if (lpList[i + 1].PicName != null)
-                                {
-                                    cell_pic2.SetCellValue((i + 2) + "、第" + (i + 2) + "个拍照点的名称" + lpList[i + 1].PicName);
-                                }
-                                anchor = new XSSFClientAnchor(50, 50, 50, 50, 0, dataCount + 2 + list.Count + i + 2, 3, dataCount + 2 + list.Count + i + 3);
-                            }
-                            if (lpList[i].PicUrl != null)
-                            {
-                                string imagesPath = lpList[i].PicUrl;
-                                HttpClient webClient = new HttpClient();
-                                Stream stream = await webClient.GetStreamAsync(imagesPath);
-                                Image img = Image.FromStream(stream).GetThumbnailImage(500, 500, null, IntPtr.Zero);
-                                MemoryStream ms = new MemoryStream();
-                                img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                                var patriarch = sheet1.CreateDrawingPatriarch();
-                                anchor.AnchorType = AnchorType.MoveAndResize;
-                                int index = workbook.AddPicture(ms.ToArray(), PictureType.PNG);
-                                var signaturePicture = patriarch.CreatePicture(anchor, index);
-                            }
-
-                        }
                         workbook.Write(fs);
                         return Json(newFile);
                     }
@@ -571,7 +383,7 @@ namespace TOYOTA.Web.Controllers
                     return Json("没有查询结果.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
