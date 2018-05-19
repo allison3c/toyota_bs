@@ -172,7 +172,7 @@ namespace TOYOTA.Web.Controllers
                         row1.Height = 600;
                         ICell cel2 = row1.CreateCell(0);
                         //cel2.CellStyle = style;
-                        cel2.SetCellValue("期间：" + startTime + "                    评估员：" + name);
+                        cel2.SetCellValue("日期：" + startTime + "              评估员：" + name);
                         cel2.CellStyle = style2;
                         CellRangeAddress region2 = new CellRangeAddress(3, 3, 0, 4);
                         sheet1.AddMergedRegion(region2);
