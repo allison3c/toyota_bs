@@ -342,10 +342,9 @@
                 fn_SetGrid();
             }
         }
-        function fn_ExcelDownLoad(pid, id, name, visitDateTime) {
+        function fn_ExcelDownLoad(pid, id, name, visitDateTime, userName) {
             var disid = id;
             var disname = name;
-            var name = Reconvert("@Context.Request.Cookies[SessionKeys.SESSION_NAME]");
 
             var opts = {
                 type: "Image",
@@ -370,7 +369,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/Report/UploadScoreAjaxDown?disCode=" + disid + "&startTime=" + visitDateTime + "&endTime=" + $("#txtEDate").val() + "&status=F&Pid=" + pid + "&disName=" + disname + "&name=" + name,
+                url: "/Report/UploadScoreAjaxDown?disCode=" + disid + "&startTime=" + visitDateTime + "&endTime=" + $("#txtEDate").val() + "&status=F&Pid=" + pid + "&disName=" + disname + "&name=" + userName,
                 contentType: false,
                 processData: false,
                 //data: data,
@@ -576,14 +575,16 @@
                         cellattr: function (rowId, val, rawObject, cm, rdata) {
                             return 'class="readonlycell"';
                         }, formatter: function (v, o, r) {
-                            return '<button type="button" class="btn btn-primary btn-sm"  style="width:100%;"  onclick="fn_ExcelDownLoad(\'' + r.Id + '\',\'' + r.DisId + '\',\'' + r.Name + '\',\'' + r.VisitDateTime + '\')">Excel下载</button>';
+                            return '<button type="button" class="btn btn-primary btn-sm"  style="width:100%;"  onclick="fn_ExcelDownLoad(\'' + r.Id + '\',\'' + r.DisId + '\',\'' + r.Name + '\',\'' + r.VisitDateTime + '\',\'' + r.UserName + '\')">Excel下载</button>';
                         }, unformat: function () {
                             return 0;
                         }
                     },
                     {
+                        name: 'UserName', label: 'UserName', width: 40, align: 'center', hidden: true
+                    },
+                    {
                         name: 'Id', label: 'Id', width: 40, align: 'center', hidden: true
-
                     }
                 ],
                 width: $('#Grid1').width(),
