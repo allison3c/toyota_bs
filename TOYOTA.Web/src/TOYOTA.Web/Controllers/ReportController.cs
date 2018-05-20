@@ -74,6 +74,8 @@ namespace TOYOTA.Web.Controllers
                         IWorkbook workbook = new XSSFWorkbook();
 
                         ISheet sheet1 = workbook.CreateSheet("得分登记");
+                        sheet1.PrintSetup.Landscape = true;
+                        sheet1.PrintSetup.PaperSize = 9;
 
                         IFont font_b = workbook.CreateFont();
                         font_b.FontName = "Microsoft Yahei";
