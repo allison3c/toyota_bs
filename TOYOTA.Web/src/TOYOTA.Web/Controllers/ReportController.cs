@@ -353,6 +353,13 @@ namespace TOYOTA.Web.Controllers
                             c = (r as IRow).CreateCell(cnum);
                             (c as ICell).SetCellValue(list[i].Score == "0" ? "否" : "是");
                             (c as ICell).CellStyle = style4;
+                            cnum++;
+
+                            //得分
+                            c = "c_" + cnum;
+                            c = (r as IRow).CreateCell(cnum);
+                            (c as ICell).SetCellValue("");
+                            (c as ICell).CellStyle = style4;
                             sheet1.AddMergedRegion(new CellRangeAddress(dataCount + 1 + i, dataCount + 1 + i, 5, 6));
                             cnum++;
 
@@ -360,6 +367,13 @@ namespace TOYOTA.Web.Controllers
                             c = "c_" + cnum;
                             c = (r as IRow).CreateCell(cnum);
                             (c as ICell).SetCellValue(list[i].Remarks);
+                            (c as ICell).CellStyle = style_b2;
+                            cnum++;
+
+                            //备注
+                            c = "c_" + cnum;
+                            c = (r as IRow).CreateCell(cnum);
+                            (c as ICell).SetCellValue("");
                             (c as ICell).CellStyle = style_b2;
                             if (i == sumCnt3)
                             {
