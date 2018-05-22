@@ -351,7 +351,7 @@ namespace TOYOTA.Web.Controllers
                             //得分
                             c = "c_" + cnum;
                             c = (r as IRow).CreateCell(cnum);
-                            (c as ICell).SetCellValue(list[i].Score == "0" ? "否" : "是");
+                            (c as ICell).SetCellValue(list[i].Result == "0" ? "否" : "是");
                             (c as ICell).CellStyle = style4;
                             cnum++;
 
