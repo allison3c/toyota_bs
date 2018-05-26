@@ -32,12 +32,13 @@
         var _grid, _gridName;
         var _grid2, _gridName2;
         var _grid3, _gridName3;
+        var _grid4, _gridName4;
         var _seqNo;// 记录第几道题
         var _tIId;//哪个体系
         var _tPId;
         var _data;//查询的所有数据
         var _tpStatus;
-        var _saveData = { ScoreLst: [], CheckResultLst: [], StandardPicLst: [], PicStandLst: [], UserId: "@Context.Request.Cookies[SessionKeys.SESSION_USERID]" };//要保存的数据
+        var _saveData = { ScoreLst: [], CheckResultLst: [], StandardPicLst: [], StandardAttachmentLst: [], PicStandLst: [], UserId: "@Context.Request.Cookies[SessionKeys.SESSION_USERID]" };//要保存的数据
 
         $(document).ready(function () {
             fn_Initialize();
@@ -154,6 +155,8 @@
             _gridName3 = 'gridPicUpload';
             _grid3 = $('#' + _gridName3);
 
+            _gridName4 = 'gridAttachmentUpload';
+            _grid4 = $('#' + _gridName4);
 
             $(".form_datetime").datetimepicker({
                 format: 'yyyy-mm-dd',
@@ -194,6 +197,7 @@
             fn_GridInit();
             fn_GridInit2();
             fn_GridInit3();
+            fn_GridInit4();
         }
         function fn_InitData() {
             _tPId = Request["TPId"];
@@ -234,6 +238,7 @@
                          _data = JSON.parse(data.body);
                          for (var i = 0; i < _data.length; i++) {
                              _saveData.StandardPicLst = $.unique(_saveData.StandardPicLst.concat(_data[i].SPicList));
+                             _saveData.StandardAttachmentLst = $.unique(_saveData.StandardAttachmentLst.concat(_data[i].AttachmentList));
                              _saveData.CheckResultLst = $.unique(_saveData.CheckResultLst.concat(_data[i].CSList));
                              _saveData.PicStandLst = $.unique(_saveData.PicStandLst.concat(_data[i].PStandardList));
                              var scoreData = {
@@ -292,6 +297,7 @@
             }
             fn_SetGrid(tandardPicLst);
 
+            //失分照片
             var picList = [];
             for (var j = 0; j < _saveData.StandardPicLst.length; j++) {
                 if (_saveData.StandardPicLst[j].TIId == _tIId && _saveData.StandardPicLst[j].Url != "") {
@@ -299,6 +305,15 @@
                 }
             }
             fn_SetGrid3(picList);
+
+            //附件
+            var attachmentList = [];
+            for (var a = 0; a < _saveData.StandardAttachmentLst.length; a++) {
+                if (_saveData.StandardAttachmentLst[a].TIId == _tIId && _saveData.StandardAttachmentLst[a].Url != "") {
+                    attachmentList.push(_saveData.StandardAttachmentLst[a]);
+                }
+            }
+            fn_SetGrid4(attachmentList);
 
             var scList = [];
             for (var k = 0; k < _saveData.CheckResultLst.length; k++) {
@@ -345,6 +360,32 @@
             }
 
             _grid3.delRowData(rowId);
+        }
+        function fn_PreviewFile(cellvalue, options, rowObject) {
+            var previewPath = rowObject.Url;
+            var attachmentName = rowObject.AttachmentName;
+            if (attachmentName.substr(attachmentName.lastIndexOf(".")) == ".gif" || attachmentName.substr(attachmentName.lastIndexOf(".")) == ".jpg" || attachmentName.substr(attachmentName.lastIndexOf(".")) == ".png")
+                return "<a href='" + previewPath + "' data-lightbox='PreviewPicture'   style='margin-left: 15px; cursor: pointer; text-decoration: underline;'>" + rowObject.AttachmentName + "</a>";
+            else {
+                var url = '@Url.Action("DownLoadForRename", "Report")' + "?fileName=" + encodeURIComponent(attachmentName) + "&sourcepath=" + previewPath;
+                return " <a href='" + url + "'  class='btn dotdotdot' style='text-align:left;' download='" + attachmentName + "'>" + attachmentName + "</a>";
+            }
+        }
+
+        function fn_UnPreviewFile(cellvalue, options, rowObject) {
+            return cellvalue;
+        }
+        function fn_DeleteAttachment(rowId) {
+            fn_SaveCell.call(_grid4);
+            var editAttachmentData = $("#gridAttachmentUpload").jqGrid('getRowData', rowId);
+            for (var i = 0; i < _saveData.StandardAttachmentLst.length; i++) {
+                if (_saveData.StandardAttachmentLst[i].TIId == editAttachmentData.TIId && _saveData.StandardAttachmentLst[i].AttachmentId == editAttachmentData.AttachmentId) {
+                    _saveData.StandardAttachmentLst[i].Url = "";
+                    break;
+                }
+            }
+
+            _grid4.delRowData(rowId);
         }
         function fn_saveTempData() {
             fn_SaveCell.call(_grid2);//分数
@@ -397,6 +438,26 @@
                 }
                 if (exitP == 0) {
                     _saveData.StandardPicLst.push(picData);
+                }
+            }
+
+            fn_SaveCell.call(_grid4);//附件上传
+            var editAttachmentData = _grid4.jqGrid("getRowData");
+            for (var a = 0; a < editAttachmentData.length; a++) {
+                var attachmentData = { TIId: _tIId, TPId: _tPId, Url: editAttachmentData[a].Url, AttachmentName: editAttachmentData[a].AttachmentName, AttachmentType: editAttachmentData[a].AttachmentType, AttachmentId: editAttachmentData[a].AttachmentId, GRUD: "I" };
+                var exitP = 0;
+                for (var b = 0; b < _saveData.StandardAttachmentLst.length; b++) {
+                    if (attachmentData.TIId == _saveData.StandardAttachmentLst[b].TIId && attachmentData.AttachmentId == _saveData.StandardAttachmentLst[b].AttachmentId) {
+                        exitP = 1;
+                        _saveData.StandardAttachmentLst[b].AttachmentType = attachmentData.AttachmentType;
+                        _saveData.StandardAttachmentLst[b].Url = attachmentData.Url;
+                        _saveData.StandardAttachmentLst[b].AttachmentName = attachmentData.AttachmentName;
+                        _saveData.StandardAttachmentLst[b].GRUD = "I";
+                        break;
+                    }
+                }
+                if (exitP == 0) {
+                    _saveData.StandardAttachmentLst.push(attachmentData);
                 }
             }
 
@@ -463,6 +524,25 @@
                 }
                 if (exitP == 0) {
                     _saveData.StandardPicLst.push(picData);
+                }
+            }
+
+            fn_SaveCell.call(_grid4);//附件上传
+            var editAttachmentData = _grid4.getChangedCells('all');
+            for (var a = 0; a < editAttachmentData.length; a++) {
+                var attachmentData = { TIId: _tIId, TPId: _tPId, Url: editAttachmentData[a].Url, AttachmentName: editAttachmentData[a].AttachmentName, AttachmentType: editAttachmentData[a].AttachmentType, AttachmentId: editAttachmentData[a].AttachmentId };
+                var exitP = 0;
+                for (var b = 0; b < _saveData.StandardAttachmentLst.length; b++) {
+                    if (attachmentData.TIId == _saveData.StandardAttachmentLst[b].TIId && attachmentData.AttachmentId == _saveData.StandardAttachmentLst[b].AttachmentId) {
+                        exitP = 1;
+                        _saveData.StandardAttachmentLst[b].PicType = attachmentData.PicType;
+                        _saveData.StandardAttachmentLst[b].Url = attachmentData.Url;
+                        _saveData.StandardAttachmentLst[b].PicName = attachmentData.PicName;
+                        break;
+                    }
+                }
+                if (exitP == 0) {
+                    _saveData.StandardAttachmentLst.push(attachmentData);
                 }
             }
 
@@ -549,7 +629,7 @@
                 datatype: 'local',
                 colModel: [
                         {
-                            name: 'StandardPicName', label: "照片名称", width: 70, align: 'left'
+                            name: 'StandardPicName', label: "照片名称", width: 200, align: 'left'
                              , formatter: function (cellvalue, options, rowObject) {
                                  if (cellvalue.indexOf("href") > -1) {
                                      return cellvalue;
@@ -705,7 +785,7 @@
                 datatype: 'local',
                 colModel: [
                         {
-                            name: 'CContent', label: "检查标准", width: 70, align: 'left',
+                            name: 'CContent', label: "检查标准", width: 200, align: 'left',
                             cellattr: function (rowId, val, rawObject, cm, rdata) {
                                 return 'class="readonlycell"';
                             }
@@ -864,10 +944,77 @@
                 }
             });
         }
-
         function fn_SetGrid3(mydata) {
             mydata = mydata || [];
             _grid3.clearGridData()
+                .setGridParam({
+                    data: mydata
+                }).trigger('reloadGrid');
+            localdata = mydata;
+        }
+
+        function fn_GridInit4() {
+            _grid4.jqGrid({
+                datatype: 'local',
+                colModel: [
+                        {
+                            name: 'AttachmentName', label: '附件名', width: 50, align: 'left', editable: false,
+                            formatter: fn_PreviewFile, unformat: fn_UnPreviewFile
+                        },
+                        {
+                            name: 'Delete', label: "删除", width: 15, align: 'center'
+                            , formatter: function (cellvalue, options, rowObject) {
+                                return "<a title='删除' href='#' onclick=fn_DeleteAttachment('" + options.rowId + "')><i class='fa fa-trash-o fa-lg'></i></a>";
+                            }, unformat: function (cellvalue, options, rowObject) {
+                                return "";
+                            }
+                        },
+                        {
+                            name: 'Url', label: 'Url', width: 50, align: 'left', editable: false, hidden: true
+                        },
+                        {
+                            name: 'AttachmentName', label: 'Url', width: 50, align: 'left', editable: false, hidden: true
+                        },
+                        {
+                            name: 'AttachmentId', label: 'Url', width: 50, align: 'left', editable: false, hidden: true
+                        },
+                        {
+                            name: 'TIId', label: 'TIId', width: 50, align: 'left', editable: false, hidden: true
+                        }
+
+                ],
+                width: $('#Grid4').width(),
+                height: 'auto',
+                rownumbers: true,
+                rownumWidth: 30,
+                rowNum: 50,
+                rowList: [50, 60, 70],
+                footerrow: false,
+                cellsubmit: 'clientArray',
+                //pager: jQuery('#pager3'),
+                cellEdit: true,
+                editurl: 'clientArray',
+                viewrecords: true,
+                gridComplete: function (id) {
+                    var rowNum = parseInt($(this).getGridParam("records"), 10);
+                    if (rowNum > 0) {
+                        $(".ui-jqgrid-sdiv").show();
+                    }
+                    else {
+                        $(".ui-jqgrid-sdiv").hide();
+                    }
+                    $('#pager4_left').css('width', '25%');
+                    $('#pager4_right').css('width', '25%');
+
+                    $("[aria-describedby='gridAttachmentUpload_rn']").addClass("readonlycell");
+                }, onCellSelect: function (rowid, iCol, cellcontent, e) {
+
+                }
+            });
+        }
+        function fn_SetGrid4(mydata) {
+            mydata = mydata || [];
+            _grid4.clearGridData()
                 .setGridParam({
                     data: mydata
                 }).trigger('reloadGrid');
@@ -888,8 +1035,92 @@
     <!-- 6. Upload-->
     <script type="text/javascript">
         //upload
-        var uploader2;
+        var uploader1;//上传附件
+        var uploader2;//上传失分照片
         $(document).ready(function () {
+            uploader1 = new plupload.Uploader({
+                runtimes: 'html5,flash,silverlight,html4',
+                browse_button: 'selectfiles_1',
+                multi_selection: false,
+                container: document.getElementById('container_1'),
+                flash_swf_url: 'lib/plupload-2.1.2/js/Moxie.swf',
+                silverlight_xap_url: 'lib/plupload-2.1.2/js/Moxie.xap',
+                url: 'http://oss.aliyuncs.com',
+
+                resize: {
+                    quality: 50
+                },
+                init: {
+                    PostInit: function () {
+                        document.getElementById('ossfile_1').innerHTML = '';
+                        document.getElementById('postfiles_1').onclick = function () {
+                            set_upload_param(uploader1, '', false);
+                            return false;
+                        };
+                    },
+
+                    FilesAdded: function (up, files) {
+                        plupload.each(files, function (file) {
+                            document.getElementById('ossfile_1').innerHTML += '<div id="' + file.id + '" class="uploadify-queue-item">\
+					<div class="cancel">\
+						<a href="" onclick="javascript:uploader1.removeFile(\'' + file.id + '\'); return false;">X</a>\
+					</div>\
+					<span class="fileName">' + file.name + ' (' + plupload.formatSize(file.size) + ')</span><span class="data"></span>\
+					<div class="uploadify-progress">\
+						<div class="uploadify-progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>\
+					</div>\
+				</div>';
+                        });
+                        document.getElementById('postfiles_1').click();
+                    },
+                    FilesRemoved: function (up, files) {
+                        $item = $("#" + files[0].id);
+                        $item.find('.data').removeClass('data').html(' - 上传取消中');
+                        $item.find('.uploadify-progress-bar').remove();
+                        $item.delay(1000).fadeOut(500, function () {
+                            $(this).remove();
+                        });
+                    },
+                    BeforeUpload: function (up, file) {
+                        set_upload_param(up, file.name, true);
+                    },
+
+                    UploadProgress: function (up, file) {
+                        var d = document.getElementById(file.id);
+                        d.getElementsByTagName('span')[1].innerHTML = '<span>' + file.percent + "%</span>";
+                        var prog = d.getElementsByTagName('div')[1];
+                        var progBar = prog.getElementsByTagName('div')[0]
+                        progBar.style.width = file.percent + '%';
+                        progBar.setAttribute('aria-valuenow', file.percent);
+                    },
+
+                    FileUploaded: function (up, file, info) {
+                        if (info.status == 200) {
+                            setTimeout(function () {
+                                if ($('#' + file.id)) {
+                                    up.total.size -= file.size;
+                                    up.total.uploaded -= 1;
+                                    delete up.files[file.id]
+                                    $('#' + file.id).fadeOut(500, function () {
+                                        $(this).remove();
+                                    });
+                                }
+                            }, 1000);
+                            fn_Addrow_1(file.name, g_object_name);
+                        }
+                        else {
+                            document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = info.response;
+                        }
+                    },
+
+                    Error: function (up, err) {
+                        console.log(document.createTextNode("\nError xml:" + err.response));
+                        console.log(err.response);
+                    }
+                }
+            });
+            uploader1.init();
+
             uploader2 = new plupload.Uploader({
                 runtimes: 'html5,flash,silverlight,html4',
                 browse_button: 'selectfiles0',
@@ -995,6 +1226,29 @@
             };
             _grid3.addRowData(newid, rowdata, 'last');
             $(_grid3.getGridRowById(newid)).addClass("edited");
+        }
+
+        function fn_Addrow_1(attachmentName, key) {
+            var ids = _grid4.getDataIDs();
+            var pref = $.jgrid.uidPref;
+            var newid = 1;
+            if (ids && ids.length > 0) {
+                var regx = new RegExp(pref, 'g');
+                var nids = ids.join(',').replace(regx, '').split(',');
+                var maxid = Math.max.apply(Math, nids);
+                newid = maxid + 1;
+            }
+            newid = pref + (newid).toString();
+            var rowdata = {
+                PreView: attachmentName,
+                Url: host + g_dirname + key,
+                AttachmentId: newid,
+                TIId: _tIId,
+                AttachmentName: attachmentName,
+                AttachmentType: ""
+            };
+            _grid4.addRowData(newid, rowdata, 'last');
+            $(_grid4.getGridRowById(newid)).addClass("edited");
         }
 
     </script>
@@ -1120,7 +1374,29 @@
     </div>
 </div>
 <div class="row" style="padding-top:5px;">
-    <div class="col-md-3  col-sm-4  gap-top">
+    <div class="col-md-6  col-sm-6  gap-top">
+        <div style="padding-left:5px; padding-top:13px;"><span class="fa fa-angle-double-right">检查标准</span></div>
+        <div id="Grid2" class="col-md-6">
+            <table id="gridCheckStandard" class="ui-jqgrid-htable"></table>
+            <div id="pager2" class="page">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6  col-sm-6  gap-top">
+        <div id="ossfile_1"></div>
+        <div id="container_1" style="padding-left:5px;">
+            <a id="selectfiles_1" href="javascript:void(0);" class='btn btn-primary'><span class="fa fa-cloud-upload gap-icon"></span>上传附件</a>
+            <a id="postfiles_1" href="javascript:void(0);" class='btn' style="display:none">开始上传</a>
+        </div>
+        <div id="Grid4" class="col-md-6">
+            <table id="gridAttachmentUpload" class="ui-jqgrid-htable"></table>
+            <div id="pager4" class="page">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="padding-top:5px;">
+    <div class="col-md-6  col-sm-6  gap-top">
         <div style="padding-left:5px;padding-top:13px;"><span class="fa fa-angle-double-right">现场照片</span></div>
         <div id="Grid1" class="col-md-6">
             <table id="gridStandardPic" class="ui-jqgrid-htable"></table>
@@ -1128,7 +1404,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3  col-sm-4  gap-top">
+    <div class="col-md-6  col-sm-6  gap-top">
         <div id="ossfile0"></div>
         <div id="container0" style="padding-left:5px;">
             <a id="selectfiles0" href="javascript:void(0);" class='btn btn-primary'><span class="fa fa-cloud-upload gap-icon"></span>上传失分照片</a>
@@ -1141,15 +1417,6 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3  col-sm-4  gap-top">
-        <div style="padding-left:5px; padding-top:13px;"><span class="fa fa-angle-double-right">检查标准</span></div>
-        <div id="Grid2" class="col-md-6">
-            <table id="gridCheckStandard" class="ui-jqgrid-htable"></table>
-            <div id="pager2" class="page">
-            </div>
-        </div>
-    </div>
-
 </div>
 
 

@@ -32,6 +32,7 @@
         var _grid, _gridName;
         var _grid2, _gridName2;
         var _grid3, _gridName3;
+        var _grid4, _gridName4;
         var _seqNo;// 记录第几道题
         var _tIId;//哪个体系
         var _tPId;
@@ -97,11 +98,15 @@
             _gridName3 = 'gridPicUpload';
             _grid3 = $('#' + _gridName3);
 
+            _gridName4 = 'gridAttachmentUpload';
+            _grid4 = $('#' + _gridName4);
+
         }
         function fn_InitGrid() {
             fn_GridInit();
             fn_GridInit2();
             fn_GridInit3();
+            fn_GridInit4();
         }
         function fn_InitData() {
             _tPId = Request["TPId"];
@@ -164,6 +169,7 @@
                     fn_SetGrid(_data[i].PStandardList);
                     fn_SetGrid2(_data[i].CSList);//检查标准
                     fn_SetGrid3(_data[i].SPicList);
+                    fn_SetGrid4(_data[i].AttachmentList);
                     break;
                 }
             }
@@ -186,7 +192,20 @@
         function fn_UnShowPic2(cellvalue, options, rowObject) {
             return rowObject.StandardPicName;
         }
+        function fn_PreviewFile(cellvalue, options, rowObject) {
+            var previewPath = rowObject.Url;
+            var attachmentName = rowObject.AttachmentName;
+            if (attachmentName.substr(attachmentName.lastIndexOf(".")) == ".gif" || attachmentName.substr(attachmentName.lastIndexOf(".")) == ".jpg" || attachmentName.substr(attachmentName.lastIndexOf(".")) == ".png")
+                return "<a href='" + previewPath + "' data-lightbox='PreviewPicture'   style='margin-left: 15px; cursor: pointer; text-decoration: underline;'>" + rowObject.AttachmentName + "</a>";
+            else {
+                var url = '@Url.Action("DownLoadForRename", "Report")' + "?fileName=" + encodeURIComponent(attachmentName) + "&sourcepath=" + previewPath;
+                return " <a href='" + url + "'  class='btn dotdotdot' style='text-align:left;' download='" + attachmentName + "'>" + attachmentName + "</a>";
+            }
+        }
 
+        function fn_UnPreviewFile(cellvalue, options, rowObject) {
+            return cellvalue;
+        }
     </script>
 
     <!-- 5. Grid -->
@@ -262,7 +281,7 @@
                 datatype: 'local',
                 colModel: [
                         {
-                            name: 'CContent', label: "检查标准", width: 70, align: 'left',
+                            name: 'CContent', label: "检查标准", width: 200, align: 'left',
                             cellattr: function (rowId, val, rawObject, cm, rdata) {
                                 return 'class="readonlycell"';
                             }
@@ -386,10 +405,63 @@
                 }
             });
         }
-
         function fn_SetGrid3(mydata) {
             mydata = mydata || [];
             _grid3.clearGridData()
+                .setGridParam({
+                    data: mydata
+                }).trigger('reloadGrid');
+            localdata = mydata;
+        }
+
+        function fn_GridInit4() {
+            _grid4.jqGrid({
+                datatype: 'local',
+                colModel: [
+                        {
+                            name: 'AttachmentName', label: '附件名', width: 50, align: 'left', editable: false,
+                            formatter: fn_PreviewFile, unformat: fn_UnPreviewFile
+                            , cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }
+                        },
+                        {
+                            name: 'Url', label: 'Url', width: 50, align: 'left', editable: false, hidden: true
+                        }
+
+                ],
+                width: $('#Grid4').width(),
+                height: 'auto',
+                rownumbers: true,
+                rownumWidth: 30,
+                rowNum: 50,
+                rowList: [50, 60, 70],
+                footerrow: false,
+                cellsubmit: 'clientArray',
+                //pager: jQuery('#pager3'),
+                cellEdit: true,
+                editurl: 'clientArray',
+                viewrecords: true,
+                gridComplete: function (id) {
+                    var rowNum = parseInt($(this).getGridParam("records"), 10);
+                    if (rowNum > 0) {
+                        $(".ui-jqgrid-sdiv").show();
+                    }
+                    else {
+                        $(".ui-jqgrid-sdiv").hide();
+                    }
+                    $('#pager3_left').css('width', '25%');
+                    $('#pager3_right').css('width', '25%');
+
+                    $("[aria-describedby='gridAttachmentUpload_rn']").addClass("readonlycell");
+                }, onCellSelect: function (rowid, iCol, cellcontent, e) {
+
+                }
+            });
+        }
+        function fn_SetGrid4(mydata) {
+            mydata = mydata || [];
+            _grid4.clearGridData()
                 .setGridParam({
                     data: mydata
                 }).trigger('reloadGrid');
@@ -515,24 +587,9 @@
         </div>
     </div>
 </div>
+
 <div class="row" style="padding-top:5px;">
-    <div class="col-md-3  col-sm-4  gap-top">
-        <div style="padding-left:5px;padding-top:13px;"><span class="fa fa-angle-double-right">现场照片</span></div>
-        <div id="Grid1" class="col-md-6">
-            <table id="gridStandardPic" class="ui-jqgrid-htable"></table>
-            <div id="pager1" class="page">
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3  col-sm-4  gap-top">
-        <div style="padding-left:5px; padding-top:13px;"><span class="fa fa-angle-double-right">失分照片</span></div>
-        <div id="Grid3" class="col-md-6">
-            <table id="gridPicUpload" class="ui-jqgrid-htable"></table>
-            <div id="pager3" class="page">
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3  col-sm-4  gap-top">
+    <div class="col-md-6  col-sm-6  gap-top">
         <div style="padding-left:5px; padding-top:13px;"><span class="fa fa-angle-double-right">检查标准</span></div>
         <div id="Grid2" class="col-md-6">
             <table id="gridCheckStandard" class="ui-jqgrid-htable"></table>
@@ -540,7 +597,32 @@
             </div>
         </div>
     </div>
-
+    <div class="col-md-6  col-sm-6  gap-top">
+        <div style="padding-left:5px;padding-top:13px;"><span class="fa fa-angle-double-right">附件</span></div>
+        <div id="Grid4" class="col-md-6">
+            <table id="gridAttachmentUpload" class="ui-jqgrid-htable"></table>
+            <div id="pager4" class="page">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="padding-top:5px;">
+    <div class="col-md-6  col-sm-6  gap-top">
+        <div style="padding-left:5px;padding-top:13px;"><span class="fa fa-angle-double-right">现场照片</span></div>
+        <div id="Grid1" class="col-md-6">
+            <table id="gridStandardPic" class="ui-jqgrid-htable"></table>
+            <div id="pager1" class="page">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6  col-sm-6  gap-top">
+        <div style="padding-left:5px; padding-top:13px;"><span class="fa fa-angle-double-right">失分照片</span></div>
+        <div id="Grid3" class="col-md-6">
+            <table id="gridPicUpload" class="ui-jqgrid-htable"></table>
+            <div id="pager3" class="page">
+            </div>
+        </div>
+    </div>
 </div>
 
 

@@ -70,26 +70,35 @@
     </div>
 </div>
 <div class="row gap-top">
-    <div class="col-md-4 col-sm-4 col-xs-4">
-            <div id="GridPicDesc" class="col-md-12 col-sm-12 col-xs-12">
-                <table id="gridpicdesc" class="ui-jqgrid-htable"></table>
-                <div id="pagerpicdesc" class="page">
-                </div>
+    <div class="col-md-6  col-sm-6">
+        <div id="GridStandard" class="col-md-6">
+            <table id="gridstandard" class="ui-jqgrid-htable"></table>
+            <div id="pagerstandart" class="page">
             </div>
+        </div>
     </div>
-    <div class="col-md-4 col-sm-4  col-xs-4">
-            <div id="Grid" class="col-md-12 col-sm-12  col-xs-12">
-                <table id="grid" class="ui-jqgrid-htable"></table>
-                <div id="pager" class="page">
-                </div>
+    <div class="col-md-6  col-sm-6">
+        <div id="Grid4" class="col-md-6">
+            <table id="gridAttachment" class="ui-jqgrid-htable"></table>
+            <div id="pager4" class="page">
             </div>
+        </div>
     </div>
-    <div class="col-md-4 col-sm-4 col-xs-4">
-            <div id="GridStandard" class="col-md-12 col-sm-12 col-xs-12">
-                <table id="gridstandard" class="ui-jqgrid-htable"></table>
-                <div id="pagerstandart" class="page">
-                </div>
+</div>
+<div class="row gap-top">
+    <div class="col-md-6  col-sm-6">
+        <div id="GridPicDesc" class="col-md-6">
+            <table id="gridpicdesc" class="ui-jqgrid-htable"></table>
+            <div id="pagerpicdesc" class="page">
             </div>
+        </div>
+    </div>
+    <div class="col-md-6  col-sm-6">
+        <div id="Grid" class="col-md-6">
+            <table id="grid" class="ui-jqgrid-htable"></table>
+            <div id="pager" class="page">
+            </div>
+        </div>
     </div>
 </div>
 <div class="row" style="position: absolute; left: 45%; margin-top: 1em">
@@ -105,6 +114,7 @@
     <!-- 1. Load -->
     <script type="text/javascript">
         var _grid, _gridName;
+        var _grid4, _gridName4;
         var _gridstandard, _gridstandardName;
         var _gridpicdesc, _gridpicdescName;
         var _reqTPId, _reqItemId, _reqPlanApproalYN, _reqResultApproalYN, _reqPlanStatus, _reqImprovementId;
@@ -122,6 +132,7 @@
             fn_GridInit();
             fn_GridStandardInit();
             fn_GridPicDescInit();
+            fn_GridInit4();
         });
     </script>
     <!-- 2. Init -->
@@ -129,6 +140,8 @@
         function fn_Initial() {
             _gridName = 'grid';
             _grid = $('#' + _gridName);
+            _gridName4 = 'gridAttachment';
+            _grid4 = $('#' + _gridName4);
             _gridstandardName = 'gridstandard';
             _gridstandard = $('#' + _gridstandardName);
             _gridpicdescName = 'gridpicdesc';
@@ -278,7 +291,7 @@
                     datatype: 'local',
                     colModel: [
                         {
-                            name: 'CContent', label: '检查标准', width:120, align: 'left',
+                            name: 'CContent', label: '检查标准', width:200, align: 'left',
                             cellattr: function (rowId, val, rawObject, cm, rdata) {
                                 return 'class="readonlycell"';
                             }
@@ -345,6 +358,7 @@
                                    fn_SetGrid(JSON.parse(data.body).PicList);
                                    fn_SetStandardGrid(JSON.parse(data.body).StandardList);
                                    fn_SetPicDescGrid(JSON.parse(data.body).PicDescList);
+                                   fn_SetGrid4(JSON.parse(data.body).AttachmentList);
                                    $('#textarea_LostDescription_id').val(JSON.parse(data.body).LostDescription);
                                    $('#span_PlanDate_id').text(JSON.parse(data.body).PlanFinishDate);
                                    $('#span_ResultDate_id').text(JSON.parse(data.body).ResultFinishDate);
@@ -513,6 +527,76 @@
         }
     </script>
 
+<!--8. Grid Attachment-->
+<script type="text/javascript">
+        function fn_GridInit4() {
+            _grid4.jqGrid({
+                datatype: 'local',
+                colModel: [
+                    {
+                        name: 'AttachmentName', label: '附件名', width: 50, align: 'left', editable: false,
+                        formatter: fn_PreviewAttachment, unformat: fn_UnPreviewAttachment
+                            , cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }
+                    },
+                    {
+                        name: 'Url', label: 'Url', width: 50, align: 'left', editable: false, hidden: true
+                    }
+                ],
+                width: $('#Grid4').width(),
+                height: 'auto',
+                rownumbers: true,
+                rownumWidth: 50,
+                rowNum: 5,
+                rowList: [5, 10],
+                footerrow: false,
+                cellsubmit: 'clientArray',
+                pager: jQuery('#pager4'),
+                cellEdit: true,
+                editurl: 'clientArray',
+                viewrecords: true,
+                afterInsertRow: function (rowid, r) {
+                },
+                gridComplete: function (id) {
+                    var rowNum = parseInt($(this).getGridParam("records"), 50);
+                    if (rowNum > 0) {
+                        $(".ui-jqgrid-sdiv").show();
+                    }
+                    else {
+                        $(".ui-jqgrid-sdiv").hide();
+                    }
+
+                    //fix the pager position
+                    $('#pager_left').css('width', '25%');
+                    $('#pager_right').css('width', '25%');
+
+                    $("[aria-describedby='gridAttachment_rn']").addClass("readonlycell");
+                }
+            });
+        }
+        function fn_SetGrid4(mydata) {
+            mydata = mydata || [];
+            _grid4.clearGridData()
+            .setGridParam({
+                data: mydata
+            }).trigger('reloadGrid');
+        }
+        function fn_PreviewAttachment(cellvalue, options, rowObject) {
+            var previewPath = rowObject.Url;
+            var attachmentName = rowObject.AttachmentName;
+            if (attachmentName.substr(attachmentName.lastIndexOf(".")) == ".gif" || attachmentName.substr(attachmentName.lastIndexOf(".")) == ".jpg" || attachmentName.substr(attachmentName.lastIndexOf(".")) == ".png")
+                return "<a href='" + previewPath + "' data-lightbox='PreviewPicture'   style='margin-left: 15px; cursor: pointer; text-decoration: underline;'>" + rowObject.AttachmentName + "</a>";
+            else {
+                var url = '@Url.Action("DownLoadForRename", "Report")' + "?fileName=" + encodeURIComponent(attachmentName) + "&sourcepath=" + previewPath;
+                return " <a href='" + url + "'  class='btn dotdotdot' style='text-align:left;' download='" + attachmentName + "'>" + attachmentName + "</a>";
+            }
+        }
+
+        function fn_UnPreviewAttachment(cellvalue, options, rowObject) {
+            return cellvalue;
+        }
+</script>
 }
 
 
