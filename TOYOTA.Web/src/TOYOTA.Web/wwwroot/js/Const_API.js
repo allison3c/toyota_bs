@@ -114,6 +114,9 @@ var SAVEREPORTATTACHMENT = BASE_URL + "Report/SaveReportAttachment";
 var UPDATEATTACHMENTDOWNLOADCNT = BASE_URL + "Report/UpdateAttachmentDownloadCnt";
 var GETATTACHMENTBYUSERID = BASE_URL + "Report/GetAttachmentByUserId";
 var GETPLANSLISTFOREXCELDOWNLOAD = BASE_URL + "Report/GetPlansListForExcelDownload";
+
+var REPORTGETREGION = BASE_URL + "Report/GetRegion";
+var REPORTGETAREA = BASE_URL + "Report/GetArea";
 //END
 
 //OSS
@@ -134,4 +137,11 @@ var GETINFOBYDISID = BASE_URL + "Statistic/GetInfoByDisId";
 var INSERTAFTERSALESDATABYEXCEL = BASE_URL + "Statistic/InsertAfterSalesDataByExcel";
 var GETAFTERSALESFIGURES = BASE_URL + "Statistic/GetAftersalesFigures";
 var GETAFTERSALESFIGURESFORHIGHCHARTS = BASE_URL + "Statistic/GetAftersalesFiguresForHighCharts";
+//END
+
+//AppealMng
+var SEARCHAPPLEALINFOLIST = BASE_URL + "AppealMng/SearchApplealInfoList";
+var APPEALINFOREG = BASE_URL + "AppealMng/AppealInfoReg";
+var APPEALINFOSEARCH = BASE_URL + "AppealMng/AppealInfoSearch";
+var UPDATEAPPLEALINFO = BASE_URL + "AppealMng/UpdateApplealInfo";
 //END

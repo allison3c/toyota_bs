@@ -386,6 +386,40 @@
             });
         }
 
+        function fn_Appeal(cellvalue, options, rowObject) {
+            return '<button type="button" class="btn btn-primary end"  onclick="fn_AppealPop(' + options.rowId + ')">申诉</button>';
+        }
+        function fn_UnAppeal() {
+
+            return "";
+        }
+
+        //申诉Pop
+        function fn_AppealPop(rowId) {
+            var rowObject = $("#gridItem").jqGrid('getRowData', rowId);
+            if (rowObject.APId == "0" && _userType != "S") {
+                $.sa.warning("没有申诉信息");
+                return;
+            }
+
+            $.sa.pop('/AppealMng/APP040P', {
+                height: 700, width: 850, title: '<span class="fa fa-hand-o-right gap-icon-right"></span><span>申诉</span>',
+                params: {
+                    TPId: rowObject.TPId,
+                    TIId: rowObject.TIId,
+                    APId: rowObject.APId,
+                    Remarks: rowObject.Remarks
+                }
+              , popcallback: function (msg) {
+                  if (msg != null && msg.length > 0) {
+                      if (msg != null && msg.length > 0) {
+                          $("#gridTask").find("tr[id='" + _rowNo + "']").find(".end").click();
+                      }
+                  }
+              }
+            });
+        }
+
     </script>
     <!-- 5. Grid -->
     <script type="text/javascript">
@@ -559,10 +593,44 @@
                             }
                         },
                         {
+                            name: 'AppealYN', label: '申诉与否', width: 35, align: 'center', editable: false, hidden: true, cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }
+                        }, {
+                            name: 'AppealResult', label: "审核状态", width: 50, align: 'center', hidden: true,
+                            cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }, formatter: function (cellvalue, options, rowObject) {
+                                if (cellvalue == "P") {
+                                    return "审核通过";
+                                } else if (cellvalue == "F") {
+                                    return "审核未过";
+                                } else if (cellvalue == "N") {
+                                    return "-";
+                                } else {
+                                    return "待审核";
+                                }
+
+                            }, unformat: function (cellvalue, options, rowObject) {
+                                return cellvalue;
+                            }
+                        },
+                        {
+                            name: 'Appeal', label: '申诉', width: 35, align: 'center', editable: false, hidden: true, cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }, formatter: fn_Appeal, unformat: fn_UnAppeal
+                        },
+                        {
                             name: 'TPId', label: 'TPId', width: 50, align: 'center', editable: false, hidden: true
                         },
                         {
                             name: 'TIId', label: 'TIId', width: 50, align: 'center', editable: false, hidden: true
+                        },
+                        {
+                            name: 'APId', label: 'APId', width: 50, align: 'center', editable: false, hidden: true
+                        },
+                        {
+                            name: 'Remarks', hidden: true
                         }
                 ],
                 width: $('#Grid2').width(),
