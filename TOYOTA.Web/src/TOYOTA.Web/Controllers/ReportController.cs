@@ -41,6 +41,27 @@ namespace TOYOTA.Web.Controllers
             ViewBag.FirstDay = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
             return View();
         }
+        public IActionResult REP020()
+        {
+            DateTime now = DateTime.Now;
+            ViewBag.CurrentDate = now.ToString("yyyy-MM-dd");
+            ViewBag.FirstDay = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
+            return View();
+        }
+        public IActionResult REP030()
+        {
+            DateTime now = DateTime.Now;
+            ViewBag.CurrentDate = now.ToString("yyyy-MM-dd");
+            ViewBag.FirstDay = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
+            return View();
+        }
+        public IActionResult REP040()
+        {
+            DateTime now = DateTime.Now;
+            ViewBag.CurrentDate = now.ToString("yyyy-MM-dd");
+            ViewBag.FirstDay = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
+            return View();
+        }
         public async Task<ActionResult> DownLoadForRename(string fileName = "", string sourcepath = "")
         {
             string contentType = "application/octet-stream";
