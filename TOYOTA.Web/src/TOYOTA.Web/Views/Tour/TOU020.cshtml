@@ -593,11 +593,11 @@
                             }
                         },
                         {
-                            name: 'AppealYN', label: '申诉与否', width: 35, align: 'center', editable: false, hidden: true, cellattr: function (rowId, val, rawObject, cm, rdata) {
+                            name: 'AppealYN', label: '申诉与否', width: 35, align: 'center', editable: false, cellattr: function (rowId, val, rawObject, cm, rdata) {
                                 return 'class="readonlycell"';
                             }
                         }, {
-                            name: 'AppealResult', label: "审核状态", width: 50, align: 'center', hidden: true,
+                            name: 'AppealResult', label: "审核状态", width: 50, align: 'center',
                             cellattr: function (rowId, val, rawObject, cm, rdata) {
                                 return 'class="readonlycell"';
                             }, formatter: function (cellvalue, options, rowObject) {
@@ -616,7 +616,7 @@
                             }
                         },
                         {
-                            name: 'Appeal', label: '申诉', width: 35, align: 'center', editable: false, hidden: true, cellattr: function (rowId, val, rawObject, cm, rdata) {
+                            name: 'Appeal', label: '申诉', width: 35, align: 'center', editable: false, cellattr: function (rowId, val, rawObject, cm, rdata) {
                                 return 'class="readonlycell"';
                             }, formatter: fn_Appeal, unformat: fn_UnAppeal
                         },
