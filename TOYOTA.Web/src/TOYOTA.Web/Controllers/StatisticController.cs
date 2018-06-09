@@ -68,6 +68,16 @@ namespace TOYOTA.Web.Controllers
             //ViewBag.FirstDay = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
             return View();
         }
+        //[Authorize]
+        [PermissionRequired]
+        // GET: /<controller>/
+        public IActionResult STA050()
+        {
+            DateTime now = DateTime.Now;
+            ViewBag.CurrentDate = now.ToString("yyyy-MM-dd");
+            ViewBag.FirstDay = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
+            return View();
+        }
 
         [HttpPost]
         public async Task<ActionResult> UploadAftersalesFiguresAjax()

@@ -1,0 +1,393 @@
+﻿@{
+    Layout = "_LayoutMenu";
+    ViewData["Title"] = "改善进度汇总-经销商";
+}
+@section HeadCss{
+    <style>
+        #txtSDate.datewidth, #txtEDate.datewidth {
+            width: 48.5%;
+        }
+
+        .datemargin {
+            margin-left: 3%;
+            margin-top: -1.4em;
+        }
+
+        .gap-icon {
+            margin-right: 5px;
+        }
+
+        .jqgridbuttonwidth {
+            width: 90%;
+        }
+    </style>
+
+}
+@section Scripts{
+    <!-- 1. Load -->
+    <script type="text/javascript">
+        var _grid, _gridName;
+        var _data;
+        $(document).ready(function () {
+            fn_Initial();
+            fn_InitialData();
+            fn_GridInit();
+        });
+    </script>
+    <!-- 2. Init -->
+    <script type="text/javascript">
+        function fn_Initial() {
+            _gridName = 'grid';
+            _grid = $('#' + _gridName);
+            $(".form_datetime").datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2, //显示到具体日期，如果设置到1，则显示到具体时间点。
+                autoclose: 1,
+                todayHighlight: 1,
+                todayBtn: 1,
+                startView: 2, //开始页面设置为具体到日期的那个页面。
+                pickerPosition: 'bottom-left'
+            });
+            $("#txtSDate").val("@ViewBag.FirstDay");
+            $("#txtEDate").val("@ViewBag.CurrentDate");
+            DateFormatCheckEvent("txtSDate", { CheckType: "BLANK" });
+            DateFormatCheckEvent("txtEDate", { CheckType: "BLANK" });
+
+            $("#btnSearch").on("click", function () {
+                fn_Search();
+            });
+            $("#btnExcelDownload").on("click", function () {
+                fn_downLoad();
+            });
+        }
+    </script>
+    <!-- 3. InitData -->
+    <script type="text/javascript">
+        function fn_InitialData() {
+            //改善完成类型
+            $.sa.get(TASKGETSTATUS, { GroupCode: '17' },
+                {
+                    "success": function (data) {
+                        $("#selImpCompleteType").html(JsonToCboList("Name", "Value", JSON.parse(data.body)));
+                    },
+                    "failure": function (data, statusText, jqXHR) {
+
+                    }
+                }
+                , $(".Grid")
+                , { type: "spin" });
+        }
+    </script>
+
+    <!-- 4. Custom Function -->
+    <script type="text/javascript">
+        function fn_SearchChk() {
+            if ($("#txtSDate").val() > $("#txtEDate").val()) {
+                $.sa.warning("结束日期不能小于开始日期"
+            , {
+                fnClose: function () {
+                    $("#txtEDate").focus();
+                    return false;
+                }
+            });
+            } else {
+                return true;
+            }
+        }
+        function fn_Search() {
+            if (fn_SearchChk()) {
+                var sdate = $("#txtSDate").val().replace(/\-/gi, '');
+                var edate = $("#txtEDate").val().replace(/\-/gi, '');
+                var completeType = $("#selImpCompleteType").val();
+
+                //$.sa.get("http://localhost:6505/mbms/api/v1/Statistic/GetImpCompleteDistributorCnt",
+                $.sa.get(GETIMPCOMPLETEDISTRIBUTORCNT,
+                 {
+                     sdate: sdate
+                     , edate: edate
+                     , completeType: completeType
+                     , inUserId: @Context.Request.Cookies[SessionKeys.SESSION_USERID]
+                     },
+                 {
+                     "success": function (data) {
+                         _data = JSON.parse(data.body);
+                         fn_SetGrid(_data);
+                         if (_data.length == 0) {
+                             $.sa.alert("未查询到数据。");
+                         }
+                     },
+                     "failure": function (data) {
+                         $.sa.warning(data.msg);
+                     }
+                 }, $("body"));
+            }
+        }
+    </script>
+    <!-- 5. Grid -->
+    <script type="text/javascript">
+        function fn_GridInit() {
+            _grid.jqGrid({
+                datatype: 'local',
+                colModel: [
+                        {
+                            name: 'Code', label: "经销商编号", width: 100, align: 'left',
+                            cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }
+                        },
+                        {
+                            name: 'Name', label: "经销商名称", width: 300, align: 'left',
+                            cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }
+                        },
+                        {
+                            name: 'CompleteTime', label: "完成时间", width: 100, align: 'center',
+                            cellattr: function (rowId, val, rawObject, cm, rdata) {
+                                return 'class="readonlycell"';
+                            }
+                        },
+                        {
+                            name: 'DisId', label: 'Id', width: 50, align: 'center', editable: false, hidden: true
+                        }
+
+                ],
+                width: $('#Grid').width(),
+                height: 'auto',
+                rownumbers: true,
+                rownumWidth: 50,
+                rowNum: 15,
+                rowList: [30, 50, 100],
+                footerrow: false,
+                cellsubmit: 'clientArray',
+                pager: jQuery('#pager'),
+                cellEdit: true,
+                editurl: 'clientArray',
+                viewrecords: true,
+                gridComplete: function (id) {
+                    var rowNum = parseInt($(this).getGridParam("records"), 10);
+                    if (rowNum > 0) {
+                        $(".ui-jqgrid-sdiv").show();
+                    }
+                    else {
+                        $(".ui-jqgrid-sdiv").hide();
+                    }
+                    $('#pager_left').css('width', '25%');
+                    $('#pager_right').css('width', '25%');
+
+                    $("[aria-describedby='grid_rn']").addClass("readonlycell");
+                }
+            });
+        }
+
+        function fn_SetGrid(mydata) {
+            mydata = mydata || [];
+            _grid.clearGridData()
+                .setGridParam({
+                    data: mydata
+                }).trigger('reloadGrid');
+            localdata = mydata;
+        }
+    </script>
+
+    <!-- 6 Excel 下载-->
+    <script src="../js/excel/FileSaver.js"></script>
+    <script src="../js/excel/jszip.min.js"></script>
+    <script src="../js/excel/xlsx.js"></script>
+    <script>
+        function fn_downLoad() {
+            if (_data == undefined) {
+                $.sa.warning("请先查询数据，再下载！");
+                return;
+            } else if (_data.length == 0) {
+                $.sa.warning("没有可下载的数据！");
+                return;
+            }
+
+            var file = new xlsx.File();
+            var sheet = file.addSheet('Report');
+            sheet.setShowGridLine(false);
+            sheet.setColWidth(0, 5, 7.5);
+            sheet.setColWidth(5, 7, 8);
+
+            var tr = sheet.addRow();
+            tr.setHeightCM(1.2);
+
+            for (var p = 0; p < 7; p++) {
+                var tc = tr.addCell();
+                if (p == 0) {
+                    tc.value = "改善进度汇总-经销商";
+                    tc.hMerge = 7;
+                    tc.style.align.v = 'center';
+                    tc.style.align.h = 'center';
+                    border(tc, 1, 1, 1, 1);
+                    fill(tc, 4)
+                    font(tc, 14, "Microsoft YaHei", true);
+                }
+            }
+
+            var header1 = sheet.addRow();
+            var hrow1 = ['改善完成类型', '',$("#selImpCompleteType option:selected").text(), '', '经销商总数量', '', _data.length + ' 个', ''];
+
+            for (var y = 0; y < hrow1.length; y++) {
+                var hc = header1.addCell();
+                hc.style.align.v = 'center';
+                hc.style.align.h = 'center';
+                hc.style.font.color = '#555555';
+                border(hc, 1, 1, 1, 1);
+                font(hc);
+                if (y == 0 || y==2 ||y == 4||y == 6) {
+                    hc.hMerge = 1;
+                }
+                hc.value = hrow1[y];
+                if (y == 0 ||y == 4) {
+                    fill(hc, 4)
+                }
+            }
+
+            sheet.addRow();
+
+            var title = sheet.addRow();
+            var hTitle = ['经销商编码','','经销商名称','','','', '完成时间',''];
+            for (var y = 0; y < hTitle.length; y++) {
+                var hc = title.addCell();
+                hc.style.align.v = 'center';
+                hc.style.align.h = 'center';
+                hc.style.font.color = '#555555';
+                border(hc, 1, 1, 1, 1);
+                font(hc);
+                hc.value = hTitle[y];
+                if (y == 0 || y==6) {
+                    hc.hMerge = 1;
+                }
+                if (y == 2) {
+                    hc.hMerge = 3;
+                }
+                fill(hc, 4)
+            }
+            drawRow(_data);
+
+            function drawRow(data) {
+                for (var i = 0; i < data.length; i++) {
+                    var row = sheet.addRow();
+
+                    var cell0 = row.addCell();
+                    border(cell0, 1, 1, 1, 1);
+                    cell0.value = data[i].Code;
+                    cell0.style.align.wrapText = true;
+                    cell0.style.align.v = 'center';
+                    cell0.style.align.h = 'center';
+                    font(cell0);
+                    
+                    var cell = row.addCell();
+                    border(cell, 1, 1, 1, 1);
+                    cell0.hMerge = 1;
+
+                    var cell1 = row.addCell();
+                    border(cell1, 1, 1, 1, 1);
+                    cell1.value = data[i].Name;
+                    cell1.style.align.v = 'center';
+                    cell1.style.align.h = 'left';
+                    font(cell1);
+                    
+                    var cell = row.addCell();
+                    border(cell, 1, 1, 1, 1);
+                    var cell = row.addCell();
+                    border(cell, 1, 1, 1, 1);
+                    var cell = row.addCell();
+                    border(cell, 1, 1, 1, 1);
+                    cell1.hMerge = 3;
+
+                    var cell2 = row.addCell();
+                    border(cell2, 1, 1, 1, 1);
+                    cell2.value = data[i].CompleteTime||'-';
+                    cell2.style.align.v = 'center';
+                    cell2.style.align.h = 'center';
+                    font(cell2);
+                    
+                    var cell = row.addCell();
+                    border(cell, 1, 1, 1, 1);
+                    cell2.hMerge = 1;
+                }
+            }
+            file.saveAs('blob')
+              .then(function (content) {
+                  saveAs(content, "改善进度汇总-经销商.xlsx");
+              });
+
+        }
+        function border(cell, top, left, bottom, right) {
+            //var light = 'ffded9d4';
+            var light = 'ffffffff';
+            var dark = 'ff7e6a54';
+            cell.style.border.top = 'thin';
+            cell.style.border.topColor = top ? dark : light;
+            cell.style.border.left = 'thin';
+            cell.style.border.leftColor = left ? dark : light;
+            cell.style.border.bottom = 'thin';
+            cell.style.border.bottomColor = bottom ? dark : light;
+            cell.style.border.right = 'thin';
+            cell.style.border.rightColor = right ? dark : light;
+        }
+
+        function fill(cell, type) {
+            type = type || 0;
+            var colors = ['ffffffff', 'ffa2917d', 'ffe4e2de', 'fffff8df', '74a3d2'];
+            // 1: header, 2: first col, 3: second col, 4: gray, 0: white
+            cell.style.fill.patternType = 'solid';
+            cell.style.fill.fgColor = colors[type];
+            cell.style.fill.bgColor = 'ffffffff';
+        }
+        function font(cell, fontsize, fontfamily, bold, underline) {
+            fontsize = fontsize || 12;
+            fontfamily = fontfamily || "Microsoft YaHei";
+            bold = bold || false;
+            underline = underline || false;
+            cell.style.font.size = fontsize;
+            cell.style.font.name = fontfamily;
+            cell.style.font.bold = bold;
+            cell.style.font.underline = underline;
+        }
+    </script>
+}
+<div class="row gap-top">
+    <div class="col-md-12">
+        <span class="fa fa-flag fa-lg gap-icon"></span><span class="page-mtitle">巡检分析</span><span>&nbsp;>&nbsp;</span>
+        <span class="page-title">改善进度汇总-经销商</span>
+        <div class="pull-right">
+            <button class="btn btn-primary" id="btnSearch">
+                <span class="fa fa-search gap-icon"></span>查询
+            </button>
+            <button class="btn btn-primary" id="btnExcelDownload">
+                <span class="fa fa-file-excel-o gap-icon"></span>下载
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row gap-top">
+    <div class="col-md-4 col-sm-6">
+        <div class="input-group">
+            <span class="input-group-addon title-sm ">拜访期间</span>
+            <input size="16" type="text" value="@ViewBag.FirstDay" class="form_datetime form-control text-center datewidth"
+                   id="txtSDate" />
+            <span>~</span>
+            <input size="16" type="text" value="@ViewBag.CurrentDate" class="form_datetime form-control text-center datewidth datemargin"
+                   id="txtEDate" />
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+        <div class="input-group">
+            <span class="input-group-addon title-sm ">改善完成类型</span>
+            <select class="form-control" id="selImpCompleteType"></select>
+        </div>
+    </div>
+</div>
+
+<div class="row gap-top">
+    <div id="Grid" class="col-md-12">
+        <table id="grid" class="ui-jqgrid-htable"></table>
+        <div id="pager" class="page">
+        </div>
+    </div>
+</div>

@@ -139,7 +139,7 @@ var GETINFOBYDISID = BASE_URL + "Statistic/GetInfoByDisId";
 var INSERTAFTERSALESDATABYEXCEL = BASE_URL + "Statistic/InsertAfterSalesDataByExcel";
 var GETAFTERSALESFIGURES = BASE_URL + "Statistic/GetAftersalesFigures";
 var GETAFTERSALESFIGURESFORHIGHCHARTS = BASE_URL + "Statistic/GetAftersalesFiguresForHighCharts";
-
+var GETIMPCOMPLETEDISTRIBUTORCNT = BASE_URL + "Statistic/GetImpCompleteDistributorCnt";
 //END
 
 //AppealMng
