@@ -1,6 +1,6 @@
 ﻿@{
     Layout = "_LayoutOfPop";
-    ViewData["Title"] = "Improvement";
+    ViewData["Title"] = "登记改善结果";
 }
 <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -11,53 +11,53 @@
     </div>
 </div>
 <div class="row  gap-top">
-    <div class="col-sm-6 col-xs-6"  style="padding:0px">
-            <div class="row">
-                <div class="col-sm-12 col-xs-12" id="div_dis_id">
-                    <div class="input-group">
-                        <span class="input-group-addon title-sm "><font color="red">*</font>&nbsp;总经理审核结果&nbsp;&nbsp;</span>
-                        <select class="form-control" id="select_DisApprovalResult_id"></select>
-                    </div>
+    <div class="col-sm-6 col-xs-6" style="padding:0px">
+        <div class="row">
+            <div class="col-sm-12 col-xs-12" id="div_dis_id">
+                <div class="input-group">
+                    <span class="input-group-addon title-sm "><font color="red">*</font>&nbsp;总经理审核结果&nbsp;&nbsp;</span>
+                    <select class="form-control" id="select_DisApprovalResult_id"></select>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="input-group">
-                        <textarea class="form-control" rows="3" id="textarea_DisApprovalContent_id" maxlength="500"></textarea>
-                    </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="input-group">
+                    <textarea class="form-control" rows="3" id="textarea_DisApprovalContent_id" maxlength="500"></textarea>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="input-group">
-                        <input class="form-control" readonly id="input_DisApprovalDate_id" />
-                    </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="input-group">
+                    <input class="form-control" readonly id="input_DisApprovalDate_id" />
                 </div>
             </div>
+        </div>
     </div>
-    <div class="col-sm-6 col-xs-6"  style="padding:0px">
-            <div class="row">
-                <div class="col-sm-12 col-xs-12" id="div_zon_id">
-                    <div class="input-group">
-                        <span class="input-group-addon title-sm"><font color="red">*</font>&nbsp;评估师审核结果&nbsp;&nbsp;</span>
-                        <select class="form-control readonly" id="select_ZoneApprovalResult_id"></select>
-                    </div>
+    <div class="col-sm-6 col-xs-6" style="padding:0px">
+        <div class="row">
+            <div class="col-sm-12 col-xs-12" id="div_zon_id">
+                <div class="input-group">
+                    <span class="input-group-addon title-sm"><font color="red">*</font>&nbsp;评估师审核结果&nbsp;&nbsp;</span>
+                    <select class="form-control readonly" id="select_ZoneApprovalResult_id"></select>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="input-group">
-                        <textarea class="form-control" rows="3" id="textarea_ZoneApprovalContent_id" maxlength="500"></textarea>
-                    </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="input-group">
+                    <textarea class="form-control" rows="3" id="textarea_ZoneApprovalContent_id" maxlength="500"></textarea>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="input-group">
-                        <input class="form-control" readonly id="input_ZoneApprovalDate_id" />
-                    </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="input-group">
+                    <input class="form-control" readonly id="input_ZoneApprovalDate_id" />
                 </div>
             </div>
+        </div>
     </div>
 </div>
 <div class="row gap-top">
@@ -77,9 +77,12 @@
     </div>
 </div>
 <div class="row" style="position: absolute; left: 45%; margin-top: 1em">
-    <div class="col-md-6 col-sm-6 col-xs-6 gap-top">
+    <div class="col-md-12 col-sm-12  col-xs-12 gap-top">
+        <button type="button" class="btn btn-primary" id="btn_tempsave_id">
+            <span class="fa fa-save gap-icon"></span><span>暂存</span>
+        </button>&nbsp;&nbsp;&nbsp;&nbsp;
         <button type="button" class="btn btn-primary" id="btn_save_id">
-            <span class="fa fa-save gap-icon"></span><span>确定</span>
+            <span class="fa fa-save gap-icon"></span><span>提交</span>
         </button>
     </div>
 </div>
@@ -88,20 +91,20 @@
     </style>
     <!-- 1. Load -->
     <script type="text/javascript">
-            var _grid, _gridName;
-            var _reqResultStatus, _reqImprovementId, _reqImpResultId, _reqResultApproalYN;
-            _reqResultStatus = Request["pamResultStatus"];//结果状态
-            _reqImprovementId = Request["pamImprovementId"];//改善Id
-            _reqImpResultId = Request["pamImpResultId"];//改善结果Id
-            _reqResultApproalYN = Request["pamResultApproalYN"];//改善结果审批与否
-            _reqAllocateYN = Request["pamAllocateYN"];//是否需要分配
-            var _deleteFileButton = true;//照片删除按钮列可见与否
-            $(document).ready(function () {
-                fn_Initial();
-                fn_InitialData();
-                fn_GridInit();
-                fn_SearchData();
-            });
+        var _grid, _gridName;
+        var _reqResultStatus, _reqImprovementId, _reqImpResultId, _reqResultApproalYN;
+        _reqResultStatus = Request["pamResultStatus"];//结果状态
+        _reqImprovementId = Request["pamImprovementId"];//改善Id
+        _reqImpResultId = Request["pamImpResultId"];//改善结果Id
+        _reqResultApproalYN = Request["pamResultApproalYN"];//改善结果审批与否
+        _reqAllocateYN = Request["pamAllocateYN"];//是否需要分配
+        var _deleteFileButton = true;//照片删除按钮列可见与否
+        $(document).ready(function () {
+            fn_Initial();
+            fn_InitialData();
+            fn_GridInit();
+            fn_SearchData();
+        });
     </script>
     <!-- 2. Init -->
     <script type="text/javascript">
@@ -110,6 +113,9 @@
             _grid = $('#' + _gridName);//上传附件列表显示grid
             $('#btn_save_id').on('click', function () {
                 fn_saveAllocate();
+            });
+            $('#btn_tempsave_id').on('click', function () {
+                fn_saveTempAllocate();
             });
             //根据状态及登陆者类型判断可否编辑
             if (_reqResultStatus != undefined && _reqResultStatus != null) {
@@ -126,6 +132,7 @@
                         $('#textarea_DisApprovalContent_id').attr("readonly", true);//经销商审批内容
                         _deleteFileButton = true;//照片删除按钮列可见与否
                         $('#container').hide();
+                        $('#btn_tempsave_id').hide();//暂存
                     } else {
                         $('#textarea_ImprovementApproval_id').attr("readonly", true);//部门计划内容
                         $('#select_DisApprovalResult_id').attr("disabled", true);//经销商审批结果
@@ -133,6 +140,7 @@
                         $('#select_ZoneApprovalResult_id').attr("disabled", true);//区域审批结果
                         $('#textarea_ZoneApprovalContent_id').attr("readonly", true);//区域审批内容
                         $('#btn_save_id').hide();//保存
+                        $('#btn_tempsave_id').hide();//暂存
                         _deleteFileButton = true;//照片删除按钮列可见与否
                         $('#container').hide();
                     }
@@ -150,12 +158,14 @@
                         $('#textarea_ZoneApprovalContent_id').attr("readonly", true);//区域审批内容
                         _deleteFileButton = true;//照片删除按钮列可见与否
                         $('#container').hide();
+                        $('#btn_tempsave_id').hide();//暂存
                     } else if (_reqResultStatus == 'E' && "@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z') {     //区域待审批 //区域登陆
                         $('#textarea_ImprovementApproval_id').attr("readonly", true);//部门计划内容
                         $('#select_DisApprovalResult_id').attr("disabled", true);//经销商审批结果
                         $('#textarea_DisApprovalContent_id').attr("readonly", true);//经销商审批内容
                         _deleteFileButton = true;//照片删除按钮列可见与否
                         $('#container').hide();
+                        $('#btn_tempsave_id').hide();//暂存
                     } else {
                         $('#textarea_ImprovementApproval_id').attr("readonly", true);//部门计划内容
                         $('#select_DisApprovalResult_id').attr("disabled", true);//经销商审批结果
@@ -163,6 +173,7 @@
                         $('#select_ZoneApprovalResult_id').attr("disabled", true);//区域审批结果
                         $('#textarea_ZoneApprovalContent_id').attr("readonly", true);//区域审批内容
                         $('#btn_save_id').hide();//保存
+                        $('#btn_tempsave_id').hide();//暂存
                         _deleteFileButton = true;//照片删除按钮列可见与否
                         $('#container').hide();
                     }
@@ -170,7 +181,7 @@
                 }
 
             }
-            if (_reqResultApproalYN != undefined && _reqResultApproalYN != null&&_reqResultApproalYN=="false") {
+            if (_reqResultApproalYN != undefined && _reqResultApproalYN != null && _reqResultApproalYN == "false") {
                 $('#div_zon_id').hide();
                 $('#textarea_ZoneApprovalContent_id').hide();
                 $('#input_ZoneApprovalDate_id').hide();
@@ -179,114 +190,114 @@
     </script>
     <!-- 3. InitData -->
     <script type="text/javascript">
-            function fn_InitialData() {
-                //var statusList = [];
-                //var varCStatus = {};
-                //varCStatus["Name"] = '内部待审核';
-                //varCStatus["Value"] = "C";
-                //statusList.push(varCStatus);
-                //var varDStatus = {};
-                //varDStatus["Name"] = '内部未通过';
-                //varDStatus["Value"] = "D";
-                //statusList.push(varDStatus);
-                //var varGStatus = {};
-                //varGStatus["Name"] = '审核通过';
-                //varGStatus["Value"] = "E";
-                //statusList.push(varGStatus);
+        function fn_InitialData() {
+            //var statusList = [];
+            //var varCStatus = {};
+            //varCStatus["Name"] = '内部待审核';
+            //varCStatus["Value"] = "C";
+            //statusList.push(varCStatus);
+            //var varDStatus = {};
+            //varDStatus["Name"] = '内部未通过';
+            //varDStatus["Value"] = "D";
+            //statusList.push(varDStatus);
+            //var varGStatus = {};
+            //varGStatus["Name"] = '审核通过';
+            //varGStatus["Value"] = "E";
+            //statusList.push(varGStatus);
 
-                //var statusAll = [];
-                //var varEStatus = {};
-                //varEStatus["Name"] = '区域待审核';
-                //varEStatus["Value"] = "E";
-                //statusAll.push(varEStatus);
-                //var varFStatus = {};
-                //varFStatus["Name"] = '区域未通过';
-                //varFStatus["Value"] = "F";
-                //statusAll.push(varFStatus);
-                //var varGStatus = {};
-                //varGStatus["Name"] = '审核通过';
-                //varGStatus["Value"] = "G";
-                //statusAll.push(varGStatus);
+            //var statusAll = [];
+            //var varEStatus = {};
+            //varEStatus["Name"] = '区域待审核';
+            //varEStatus["Value"] = "E";
+            //statusAll.push(varEStatus);
+            //var varFStatus = {};
+            //varFStatus["Name"] = '区域未通过';
+            //varFStatus["Value"] = "F";
+            //statusAll.push(varFStatus);
+            //var varGStatus = {};
+            //varGStatus["Name"] = '审核通过';
+            //varGStatus["Value"] = "G";
+            //statusAll.push(varGStatus);
 
-                //$("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
-                //$("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", statusAll));
-                //if (_reqResultStatus != undefined && _reqResultStatus != null) {
-                //    if (_reqResultStatus == 'A' || _reqResultStatus == 'C') {
-                //        $("#select_DisApprovalResult_id").val('C');
-                //        $("#select_ZoneApprovalResult_id").val('E');
-                //    } else if (_reqResultStatus == 'D') {
-                //        $("#select_DisApprovalResult_id").val('D');
-                //        $("#select_ZoneApprovalResult_id").val('E');
-                //    } else if (_reqResultStatus == 'E') {
-                //        $("#select_DisApprovalResult_id").val('E');
-                //        $("#select_ZoneApprovalResult_id").val('E');
-                //    } else if (_reqResultStatus == 'F') {
-                //        $("#select_DisApprovalResult_id").val('E');
-                //        $("#select_ZoneApprovalResult_id").val('F');
-                //    }else if (_reqResultStatus == 'G') {
-                //        $("#select_DisApprovalResult_id").val('E');
-                //        $("#select_ZoneApprovalResult_id").val('G');
-                //    }
-                //}
+            //$("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
+            //$("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", statusAll));
+            //if (_reqResultStatus != undefined && _reqResultStatus != null) {
+            //    if (_reqResultStatus == 'A' || _reqResultStatus == 'C') {
+            //        $("#select_DisApprovalResult_id").val('C');
+            //        $("#select_ZoneApprovalResult_id").val('E');
+            //    } else if (_reqResultStatus == 'D') {
+            //        $("#select_DisApprovalResult_id").val('D');
+            //        $("#select_ZoneApprovalResult_id").val('E');
+            //    } else if (_reqResultStatus == 'E') {
+            //        $("#select_DisApprovalResult_id").val('E');
+            //        $("#select_ZoneApprovalResult_id").val('E');
+            //    } else if (_reqResultStatus == 'F') {
+            //        $("#select_DisApprovalResult_id").val('E');
+            //        $("#select_ZoneApprovalResult_id").val('F');
+            //    }else if (_reqResultStatus == 'G') {
+            //        $("#select_DisApprovalResult_id").val('E');
+            //        $("#select_ZoneApprovalResult_id").val('G');
+            //    }
+            //}
 
-                var statusList = [];
-                var varAStatus = {};
-                varAStatus["Name"] = '结果待制定';
-                varAStatus["Value"] = "A";
-                statusList.push(varAStatus);
-                var varCStatus = {};
-                varCStatus["Name"] = '内部待审核';
-                varCStatus["Value"] = "C";
-                statusList.push(varCStatus);
-                var varDStatus = {};
-                varDStatus["Name"] = '内部未通过';
-                varDStatus["Value"] = "D";
-                statusList.push(varDStatus);
-                var varEStatus = {};
-                varEStatus["Name"] = '区域待审核';
-                varEStatus["Value"] = "E";
-                statusList.push(varEStatus);
-                var varFStatus = {};
-                varFStatus["Name"] = '区域未通过';
-                varFStatus["Value"] = "F";
-                statusList.push(varFStatus);
-                var varGStatus = {};
-                varGStatus["Name"] = '审核通过';
-                varGStatus["Value"] = "G";
-                statusList.push(varGStatus);
+            var statusList = [];
+            var varAStatus = {};
+            varAStatus["Name"] = '结果待制定';
+            varAStatus["Value"] = "A";
+            statusList.push(varAStatus);
+            var varCStatus = {};
+            varCStatus["Name"] = '内部待审核';
+            varCStatus["Value"] = "C";
+            statusList.push(varCStatus);
+            var varDStatus = {};
+            varDStatus["Name"] = '内部未通过';
+            varDStatus["Value"] = "D";
+            statusList.push(varDStatus);
+            var varEStatus = {};
+            varEStatus["Name"] = '区域待审核';
+            varEStatus["Value"] = "E";
+            statusList.push(varEStatus);
+            var varFStatus = {};
+            varFStatus["Name"] = '区域未通过';
+            varFStatus["Value"] = "F";
+            statusList.push(varFStatus);
+            var varGStatus = {};
+            varGStatus["Name"] = '审核通过';
+            varGStatus["Value"] = "G";
+            statusList.push(varGStatus);
 
-                if (_reqResultStatus != undefined && _reqResultStatus != null) {
-                    if ((_reqResultStatus == 'C' || _reqResultStatus == 'F') && "@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S') {
-                        var cfList = [];
-                        cfList.push(varCStatus);
-                        cfList.push(varDStatus);
-                        if (_reqResultApproalYN == "false") {
-                            var varHStatus = {};
-                            varHStatus["Name"] = '审核通过';
-                            varHStatus["Value"] = "E";
-                            cfList.push(varHStatus);
-                        } else {
-                            cfList.push(varEStatus);
-                            if (_reqResultStatus == 'F')
-                                cfList.push(varFStatus);
-                        }
-                        $("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", cfList));
-                        $("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
-                    } else if (_reqResultStatus == 'E' && "@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z') {
-                        var eList = [];
-                        eList.push(varEStatus);
-                        eList.push(varFStatus);
-                        eList.push(varGStatus);
-                        $("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
-                        $("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", eList));
-                    } else{
-                        $("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
-                        $("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
+            if (_reqResultStatus != undefined && _reqResultStatus != null) {
+                if ((_reqResultStatus == 'C' || _reqResultStatus == 'F') && "@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S') {
+                    var cfList = [];
+                    cfList.push(varCStatus);
+                    cfList.push(varDStatus);
+                    if (_reqResultApproalYN == "false") {
+                        var varHStatus = {};
+                        varHStatus["Name"] = '审核通过';
+                        varHStatus["Value"] = "E";
+                        cfList.push(varHStatus);
+                    } else {
+                        cfList.push(varEStatus);
+                        if (_reqResultStatus == 'F')
+                            cfList.push(varFStatus);
                     }
-                    $("#select_DisApprovalResult_id").val(_reqResultStatus);
-                    $("#select_ZoneApprovalResult_id").val(_reqResultStatus);
+                    $("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", cfList));
+                    $("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
+                } else if (_reqResultStatus == 'E' && "@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z') {
+                    var eList = [];
+                    eList.push(varEStatus);
+                    eList.push(varFStatus);
+                    eList.push(varGStatus);
+                    $("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
+                    $("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", eList));
+                } else {
+                    $("#select_DisApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
+                    $("#select_ZoneApprovalResult_id").html(JsonToCboList("Name", "Value", statusList));
                 }
+                $("#select_DisApprovalResult_id").val(_reqResultStatus);
+                $("#select_ZoneApprovalResult_id").val(_reqResultStatus);
             }
+        }
     </script>
     <!--4. Grid Pictrue-->
     <script type="text/javascript">
@@ -373,8 +384,8 @@
                 ids = id + '';
             _grid.delRowData(ids);
         }
-         //添加行
-        function fn_Addrow(picName,key) {
+        //添加行
+        function fn_Addrow(picName, key) {
             var ids = _grid.getDataIDs();
             var pref = $.jgrid.uidPref;
             var newid = 1;
@@ -410,17 +421,17 @@
         function fn_UnPreviewFile(cellvalue, options, rowObject) {
             return rowObject.AttachName;
         }
-     </script>
+    </script>
     <!--6. Search-->
     <script type="text/javascript">
         function fn_SearchData() {
             $.sa.get(GETIMPPLANORRESULTDETAIL, {
-                            'improvementId': _reqImprovementId == undefined ? 0 : parseInt(_reqImprovementId)
+                'improvementId': _reqImprovementId == undefined ? 0 : parseInt(_reqImprovementId)
                             , 'searchType': 'R'
                             , 'impResultId': _reqImpResultId == undefined ? 0 : parseInt(_reqImpResultId)
-                            , 'tPId':0
-                            , 'itemId':0
-                        },
+                            , 'tPId': 0
+                            , 'itemId': 0
+            },
                        {
                            "success": function (data) {
                                if (data.resultCode == 0) {
@@ -430,14 +441,14 @@
                                        $('#textarea_ImprovementApproval_id').val(resultDto.ReplyContent);//部门改善结果
                                        //if (resultDto.SResultStatus == "C" || resultDto.SResultStatus == "D" || resultDto.SResultStatus == "E") {
 
-                                           $('#select_DisApprovalResult_id').val(resultDto.SResultStatus);//经销商审批结果
+                                       $('#select_DisApprovalResult_id').val(resultDto.SResultStatus);//经销商审批结果
 
                                        //}
                                        $('#textarea_DisApprovalContent_id').val((resultDto.ApprovalSContent == null ? "" : resultDto.ApprovalSContent));//经销商审批内容
                                        $('#input_DisApprovalDate_id').val("审批时间：" + (resultDto.SApprovalDate == null ? "" : resultDto.SApprovalDate));
                                        //if (resultDto.ZResultStatus == "E" || resultDto.ZResultStatus == "F" || resultDto.ZResultStatus == "G") {
 
-                                           $('#select_ZoneApprovalResult_id').val(resultDto.ZResultStatus);//区域审批结果
+                                       $('#select_ZoneApprovalResult_id').val(resultDto.ZResultStatus);//区域审批结果
 
                                        //}
                                        $('#textarea_ZoneApprovalContent_id').val((resultDto.ApprovalZContent == null ? "" : resultDto.ApprovalZContent));//区域审批内容
@@ -456,124 +467,177 @@
     </script>
     <!--7. Validate Before Save-->
     <script type="text/javascript">
-            function fn_saveValidate() {
-                var isValiA = true;
-                var isValiB = true;
-                var isValiC = true;
-                var isVali = true;
-                if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'D' || ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S' && _reqAllocateYN == "false"))//部门
-                {
-                    if ($.trim($("#textarea_ImprovementApproval_id").val()) == "") {//部门改善结果
-                        isValiA = false;
-                    }
+        function fn_saveValidate() {
+            var isValiA = true;
+            var isValiB = true;
+            var isValiC = true;
+            var isVali = true;
+            if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'D' || ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S' && _reqAllocateYN == "false"))//部门
+            {
+                if ($.trim($("#textarea_ImprovementApproval_id").val()) == "") {//部门改善结果
+                    isValiA = false;
                 }
-                else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S')//经销商
-                {
-                    if (_reqAllocateYN=="true"&&($.trim($("#select_DisApprovalResult_id").val()) == "" || (_reqResultStatus != undefined && _reqResultStatus != null &&( $.trim($("#select_DisApprovalResult_id").val()) == "C" || $.trim($("#select_DisApprovalResult_id").val()) == "F")))) {//经销商登陆，状态未改动
-                        isValiB = false;
-                    }
-                }
-                else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z')//区域
-                {
-                    if ($.trim($("#select_ZoneApprovalResult_id").val()) == "" || (_reqResultStatus != undefined && _reqResultStatus != null && $.trim($("#select_ZoneApprovalResult_id").val()) == "E")) {//区域登陆，状态未改动
-                        isValiC = false;
-                    }
-                }
-
-                if (!isValiA) {
-                    $.sa.warning("请输入改善结果",{
-                        title: "警告！", fnClose: function () {
-                            $("#textarea_ImprovementApproval_id").focus();
-                        }
-                    });
-                } else if (!isValiB) {
-                    $.sa.warning("请更改审批状态", {
-                        title: "警告！", fnClose: function () {
-                            $("#select_DisApprovalResult_id").focus();
-                        }
-                    });
-                } else if (!isValiC) {
-                    $.sa.warning("请更改审批状态", {
-                        title: "警告！", fnClose: function () {
-                            $("#select_ZoneApprovalResult_id").focus();
-                        }
-                    });
-                }
-                isVali = isValiA & isValiB & isValiC;
-                return isVali;
             }
+            else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S')//经销商
+            {
+                if (_reqAllocateYN == "true" && ($.trim($("#select_DisApprovalResult_id").val()) == "" || (_reqResultStatus != undefined && _reqResultStatus != null && ($.trim($("#select_DisApprovalResult_id").val()) == "C" || $.trim($("#select_DisApprovalResult_id").val()) == "F")))) {//经销商登陆，状态未改动
+                    isValiB = false;
+                }
+            }
+            else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z')//区域
+            {
+                if ($.trim($("#select_ZoneApprovalResult_id").val()) == "" || (_reqResultStatus != undefined && _reqResultStatus != null && $.trim($("#select_ZoneApprovalResult_id").val()) == "E")) {//区域登陆，状态未改动
+                    isValiC = false;
+                }
+            }
+
+            if (!isValiA) {
+                $.sa.warning("请输入改善结果", {
+                    title: "警告！", fnClose: function () {
+                        $("#textarea_ImprovementApproval_id").focus();
+                    }
+                });
+            } else if (!isValiB) {
+                $.sa.warning("请更改审批状态", {
+                    title: "警告！", fnClose: function () {
+                        $("#select_DisApprovalResult_id").focus();
+                    }
+                });
+            } else if (!isValiC) {
+                $.sa.warning("请更改审批状态", {
+                    title: "警告！", fnClose: function () {
+                        $("#select_ZoneApprovalResult_id").focus();
+                    }
+                });
+            }
+            isVali = isValiA & isValiB & isValiC;
+            return isVali;
+        }
     </script>
     <!--7. Save-->
     <script type="text/javascript">
-            function fn_saveAllocate() {
-                if (fn_saveValidate()) {
-                    var myDialog = $.sa.confirm('是否要保存？', {
-                        fnOk: function () {
-                            var editData = _grid.jqGrid("getRowData");
-                            var param = {};
-                            param["ImprovementId"] = _reqImprovementId == undefined ? 0 : parseInt(_reqImprovementId);//改善Id
-                            param["ImpResultId"] = _reqImpResultId == undefined ? 0 : parseInt(_reqImpResultId);//改善结果Id
-                            param["InUserId"] = '@Context.Request.Cookies[SessionKeys.SESSION_USERID]';//登陆者
-                            param["AttachList"] = editData;//附件列表
+        function fn_saveAllocate() {
+            if (fn_saveValidate()) {
+                var myDialog = $.sa.confirm('提交完毕后不可修改，是否确定提交？', {
+                    fnOk: function () {
+                        var editData = _grid.jqGrid("getRowData");
+                        var param = {};
+                        param["ImprovementId"] = _reqImprovementId == undefined ? 0 : parseInt(_reqImprovementId);//改善Id
+                        param["ImpResultId"] = _reqImpResultId == undefined ? 0 : parseInt(_reqImpResultId);//改善结果Id
+                        param["InUserId"] = '@Context.Request.Cookies[SessionKeys.SESSION_USERID]';//登陆者
+                        param["AttachList"] = editData;//附件列表
 
-                            //改善内容
-                            var willSaveContent ="";
-                            if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'D')//部门登陆
-                            {
-                                willSaveContent = $("#textarea_ImprovementApproval_id").val();//部门改善结果
-                            } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S')//经销商
-                            {
-                                if (_reqAllocateYN == "false")
-                                    willSaveContent = $("#textarea_ImprovementApproval_id").val();
-                                else
-                                    willSaveContent = $("#textarea_DisApprovalContent_id").val();
-                            } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z') {//区域登陆
-                                willSaveContent = $("#textarea_ZoneApprovalContent_id").val();//区域审批结果
-                            }
-                            param["ResultContent"] = willSaveContent;
-
-                            //结果状态
-                            var willSaveStatus = _reqResultStatus == undefined ? "A" : _reqResultStatus;
-                            if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'D')//部门登陆
-                            {
-                                willSaveStatus = "C";//内部待审核
-                            } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S' )//经销商
-                            {
-                                if (_reqAllocateYN == "false")
-                                    if (_reqResultApproalYN == "false")
-                                        willSaveStatus = "G";
-                                    else
-                                        willSaveStatus = "E";
-                                else
-                                    willSaveStatus = $("#select_DisApprovalResult_id").val();//经销商审批结果
-                            }else if("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z'){//区域登陆
-                                willSaveStatus = $("#select_ZoneApprovalResult_id").val();//区域审批结果
-                            }
-                            param["ResultStatus"] = willSaveStatus;
-                            $.sa.post(SAVEIMPROVEMENTRESULT,
-                                JSON.stringify(param),
-                                     {
-                                         "success": function (data) {
-                                             if (data.resultCode == 0) {
-                                                 $.sa.alert('保存完成', { maxWidth: '400px', minWidth: '300px', showClose: false });
-                                                 myDialog.close();
-                                                 parent.popcallback('1');
-                                             } else {
-                                                 $.sa.alert(data.msg);
-                                                 myDialog.close();
-                                             }
-                                         },
-                                         "failure": function (data, statusText, jqXHR) {
-                                             $("#callback_1_layer").html(data.msg);
-                                         }
-                                     }
-                                     , $("body"));
+                        //改善内容
+                        var willSaveContent = "";
+                        if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'D')//部门登陆
+                        {
+                            willSaveContent = $("#textarea_ImprovementApproval_id").val();//部门改善结果
+                        } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S')//经销商
+                        {
+                            if (_reqAllocateYN == "false")
+                                willSaveContent = $("#textarea_ImprovementApproval_id").val();
+                            else
+                                willSaveContent = $("#textarea_DisApprovalContent_id").val();
+                        } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z') {//区域登陆
+                            willSaveContent = $("#textarea_ZoneApprovalContent_id").val();//区域审批结果
                         }
-                    });
+                        param["ResultContent"] = willSaveContent;
 
-                }
+                        //结果状态
+                        var willSaveStatus = _reqResultStatus == undefined ? "A" : _reqResultStatus;
+                        if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'D')//部门登陆
+                        {
+                            willSaveStatus = "C";//内部待审核
+                        } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S')//经销商
+                        {
+                            if (_reqAllocateYN == "false")
+                                if (_reqResultApproalYN == "false")
+                                    willSaveStatus = "G";
+                                else
+                                    willSaveStatus = "E";
+                            else
+                                willSaveStatus = $("#select_DisApprovalResult_id").val();//经销商审批结果
+                        } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z') {//区域登陆
+                            willSaveStatus = $("#select_ZoneApprovalResult_id").val();//区域审批结果
+                        }
+                        param["ResultStatus"] = willSaveStatus;
+                        $.sa.post(SAVEIMPROVEMENTRESULT,
+                            JSON.stringify(param),
+                                 {
+                                     "success": function (data) {
+                                         if (data.resultCode == 0) {
+                                             $.sa.alert('提交完毕。', { maxWidth: '400px', minWidth: '300px', showClose: false });
+                                             myDialog.close();
+                                             parent.popcallback('1');
+                                         } else {
+                                             $.sa.alert(data.msg);
+                                             myDialog.close();
+                                         }
+                                     },
+                                     "failure": function (data, statusText, jqXHR) {
+                                         $("#callback_1_layer").html(data.msg);
+                                     }
+                                 }
+                                 , $("body"));
+                    }
+                });
 
             }
+
+        }
+        function fn_saveTempAllocate() {
+            if (fn_saveValidate()) {
+                var myDialog = $.sa.confirm('是否要保存？', {
+                    fnOk: function () {
+                        var editData = _grid.jqGrid("getRowData");
+                        var param = {};
+                        param["ImprovementId"] = _reqImprovementId == undefined ? 0 : parseInt(_reqImprovementId);//改善Id
+                        param["ImpResultId"] = _reqImpResultId == undefined ? 0 : parseInt(_reqImpResultId);//改善结果Id
+                        param["InUserId"] = '@Context.Request.Cookies[SessionKeys.SESSION_USERID]';//登陆者
+                        param["AttachList"] = editData;//附件列表
+
+                        //改善内容
+                        var willSaveContent = "";
+                        if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'D')//部门登陆
+                        {
+                            willSaveContent = $("#textarea_ImprovementApproval_id").val();//部门改善结果
+                        } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'S')//经销商
+                        {
+                            if (_reqAllocateYN == "false")
+                                willSaveContent = $("#textarea_ImprovementApproval_id").val();
+                            else
+                                willSaveContent = $("#textarea_DisApprovalContent_id").val();
+                        } else if ("@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]" == 'Z') {//区域登陆
+                            willSaveContent = $("#textarea_ZoneApprovalContent_id").val();//区域审批结果
+                        }
+                        param["ResultContent"] = willSaveContent;
+
+                        //结果状态
+                        param["ResultStatus"] = "H";
+                        $.sa.post(SAVEIMPROVEMENTRESULT,
+                            JSON.stringify(param),
+                                 {
+                                     "success": function (data) {
+                                         if (data.resultCode == 0) {
+                                             $.sa.alert('保存完成', { maxWidth: '400px', minWidth: '300px', showClose: false });
+                                             myDialog.close();
+                                             parent.popcallback('1');
+                                         } else {
+                                             $.sa.alert(data.msg);
+                                             myDialog.close();
+                                         }
+                                     },
+                                     "failure": function (data, statusText, jqXHR) {
+                                         $("#callback_1_layer").html(data.msg);
+                                     }
+                                 }
+                                 , $("body"));
+                    }
+                });
+
+            }
+
+        }
     </script>
 
 }
