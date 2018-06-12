@@ -152,7 +152,7 @@
             $.sa.get(TASKGETSTATUS, { GroupCode: '15' },
                 {
                     "success": function (data) {
-                        $("#selSourceType").html(JsonToCboList("Name", "Value", JSON.parse(data.body), { 'SelectType': 'ALL' }));
+                        $("#selSourceType").html(JsonToCboList("Name", "Value", JSON.parse(data.body)));
                     },
                     "failure": function (data, statusText, jqXHR) {
 
@@ -317,7 +317,7 @@
         //经销商Pop
         function fn_SelectDistributor(id) {
             $.sa.pop('/Tour/TOU010P', {
-                height: 500, width: 600, title: '<span class="fa fa-hand-o-right gap-icon-right"></span><span>经销商列表</span>',
+                height: 600, width: 600, title: '<span class="fa fa-hand-o-right gap-icon-right"></span><span>经销商列表</span>',
                 params: {
                     Type: "S"
                 }
@@ -745,7 +745,7 @@
     <div class="col-md-4 col-sm-6">
         <div class="input-group">
             <span class="input-group-addon title-sm ">来源类型</span>
-            <select class="form-control" id="selSourceType"></select>
+            <select class="form-control" id="selSourceType" disabled></select>
         </div>
     </div>
     <div class="col-md-4 col-sm-6">

@@ -14,7 +14,7 @@
         $(document).ready(function () {
             _type = Request["Type"];
             Initialize();
-            //InitData();
+            InitData();
         });
     </script>
 
@@ -39,7 +39,7 @@
     <!-- 4. Custom Function -->
     <script type="text/javascript">
         function fn_initData() {
-            fn_Search();
+            fn_searchArea();
         }
         function fn_Search() {
             var jsonUrl = "";
@@ -53,6 +53,7 @@
             $.sa.get(jsonUrl,
                            {
                                UserId: "@Context.Request.Cookies[SessionKeys.SESSION_USERID]"
+                               , aDisId: $("#selArea").val()
                                , disCode: $.trim($("#txtCode").val()) == "" ? '%' : $.trim($("#txtCode").val())
                                , disName: $.trim($("#txtName").val()) == "" ? '%' : $.trim($("#txtName").val())
                            },
@@ -70,6 +71,26 @@
                                    $.sa.warning(data.msg);
                                }
                            }, $("body"));
+        }
+        function fn_searchArea() {
+            //'http://localhost:6505/toyota/api/v1/PlanTask/GetDistributorByUserId'
+            $.sa.get(GETDISTRIBUTORBYUSERID,
+                           { UserId: '@Context.Request.Cookies[SessionKeys.SESSION_USERID]' },
+                           {
+                               "success": function (data) {
+                                   if (data != null) {
+                                       if ('@Context.Request.Cookies[SessionKeys.SESSION_USERTYPE]' == 'Z') {
+                                           $('#selArea').html(JsonToCboList("Name", "Value", JSON.parse(data.body)));
+
+                                       } else {
+                                           $('#selArea').html(JsonToCboList("Name", "Value", JSON.parse(data.body), { "SelectType": "ALL" }));
+                                       }
+                                   }
+                               },
+                               "failure": function (data, statusText, jqXHR) {
+                                   $.sa.warning(data.msg);
+                               }
+                           });
         }
     </script>
 
@@ -105,8 +126,8 @@
                 height: 'auto',
                 rownumbers: true,
                 rownumWidth: 30,
-                rowNum: 15,
-                rowList: [15, 30, 45],
+                rowNum: 10,
+                rowList: [20, 30, 40],
                 footerrow: false,
                 cellsubmit: 'clientArray',
                 pager: jQuery('#pager'),
@@ -149,7 +170,13 @@
 }
 <div class="container-fluid">
     <div class="row">
-        <div class="col-xs-12">
+        <div class="col-xs-8">
+            <div class="input-group">
+                <span class="input-group-addon title-sm">区域</span>
+                <select class="form-control" id="selArea"></select>
+            </div>
+        </div>
+        <div class="col-xs-4">
             <button id="btnSearch" class="btn btn-primary pull-right">
                 <span class="fa fa-search gap-icon"></span>查询
             </button>
@@ -159,7 +186,7 @@
         <div class="col-xs-5">
             <div class="input-group">
                 <span class="input-group-addon title-sm">经销商代码</span>
-                <input size="16" type="text"  class="form-control" id="txtCode" />
+                <input size="16" type="text" class="form-control" id="txtCode" />
             </div>
         </div>
         <div class="col-xs-7">
