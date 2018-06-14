@@ -16,6 +16,7 @@ var INSERTALLOCATEIMPROVEMENTITEM = BASE_URL + "ImprovementMng/InsertAllocateImp
 var GEIMPROVEMENTITEMFROMSCORELIST = BASE_URL + "ImprovementMng/GeImprovementItemFromScoreList";
 var GETALLTASKOFPLANFORIMP = BASE_URL + "ImprovementMng/GetAllTaskOfPlanForImp";
 var GETIMPITEMFROMSCORE = BASE_URL + "ImprovementMng/GetImpItemFromScore";
+var GETSCOREANDIMPROVEMENTLIST = BASE_URL + "ImprovementMng/GetScoreAndImprovementList";
 //IMP end
 
 //Tou start
@@ -71,6 +72,7 @@ var GETGROUPLIST = BASE_URL + "Users/GetGroupList";
 var GETTYPELIST = BASE_URL + "Users/GetTypeList";
 var UPDATETYPE = BASE_URL + "Users/UpdateType";
 var INSERTDEALERS = BASE_URL + "Users/InsertDealers";
+var GETORGINFOHAVECOMPLETEDTASK = BASE_URL + "Users/GetOrgInfoHaveCompletedTask";
 //BAS end
 
 //NoticeMade start

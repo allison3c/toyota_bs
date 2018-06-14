@@ -11,8 +11,12 @@
     <!-- 1. Load -->
     <script type="text/javascript">
         var _type = "";
+        var _sDate = "";
+        var _eDate = "";
         $(document).ready(function () {
             _type = Request["Type"];
+            _sDate = Request["SDate"];
+            _eDate = Request["EDate"];
             Initialize();
             InitData();
         });
@@ -54,6 +58,8 @@
                            {
                                UserId: "@Context.Request.Cookies[SessionKeys.SESSION_USERID]"
                                , aDisId: $("#selArea").val()
+                               , sDate: _sDate
+                               , eDate: _eDate
                                , disCode: $.trim($("#txtCode").val()) == "" ? '%' : $.trim($("#txtCode").val())
                                , disName: $.trim($("#txtName").val()) == "" ? '%' : $.trim($("#txtName").val())
                            },

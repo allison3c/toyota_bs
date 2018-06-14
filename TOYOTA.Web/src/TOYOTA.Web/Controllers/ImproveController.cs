@@ -64,6 +64,16 @@ namespace TOYOTA.Web.Controllers
             ViewBag.CurrentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
             return View();
         }
+        //[Authorize]
+        [PermissionRequired]
+        // GET: /<controller>/
+        public IActionResult IMP040()
+        {
+            DateTime now = DateTime.Now;
+            ViewBag.CurrentDate = now.ToString("yyyy-MM-dd");
+            ViewBag.FirstDay = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
+            return View();
+        }
 
         public async Task<ActionResult> DownLoadForRename(string fileName = "", string sourcepath = "")
         {

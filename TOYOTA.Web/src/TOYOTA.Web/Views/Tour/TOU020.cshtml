@@ -319,7 +319,9 @@
             $.sa.pop('/Tour/TOU010P', {
                 height: 600, width: 600, title: '<span class="fa fa-hand-o-right gap-icon-right"></span><span>经销商列表</span>',
                 params: {
-                    Type: "S"
+                    Type: "S",
+                    SDate: $("#txtSDate").val(),
+                    EDate: $("#txtEDate").val()
                 }
                , popcallback: function (msg) {
                    if (msg != null && msg.length > 0) {
