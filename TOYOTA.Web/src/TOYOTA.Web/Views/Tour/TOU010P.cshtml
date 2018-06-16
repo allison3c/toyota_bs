@@ -25,6 +25,12 @@
     <!-- 2. Init -->
     <script type="text/javascript">
         function Initialize() {
+            if (_type == "S") {
+                $("#divArea").show();
+            } else {
+                $("#divArea").hide();
+            }
+
             fn_GridInit();
             var width = $("div.ui-jqgrid-bdiv").width();
             $("div.ui-jqgrid-sdiv").css("width", width);
@@ -177,7 +183,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-8">
-            <div class="input-group">
+            <div class="input-group" style="display:none;" id="divArea">
                 <span class="input-group-addon title-sm">区域</span>
                 <select class="form-control" id="selArea"></select>
             </div>
